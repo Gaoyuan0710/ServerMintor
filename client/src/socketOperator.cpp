@@ -16,9 +16,11 @@
 
 #include <iostream>
 
-#include "socketOperator.h"
+#include "../include/socketOperator.h"
 
 namespace mySystemMintor{
-bool sockOperator:: 
+bool sockOperator::setAddr(string dest, string port){
+	
+}
 }
 
