@@ -22,16 +22,16 @@
 #include "log.cpp"
 
 namespace mySystemMintor{
-bool sockOperator::setAddr(string dest, string port){
+bool sockOperator::setAddrPort(string dest, string port){	
 	bzero(&destAddress, sizeof(destAddress));
 	destAddress.sin_family = AF_INET;
 	destAddress.sin_port = htons(atoi(port.c_str()));
-	inet_pton(AF_INET, atoi(dest.c_str()), &destAddress.sin_port);
+	inet_pton(AF_INET, dest.c_str(), &destAddress.sin_port);
 
 	return true;
 }
 bool sockOperator::connectServer(){
-	sockfd = sock(AF_INET, SOCK_DGRAM, 0);
+	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 
 	if (sockfd < 0){
 		mylog("errlog.txt", "Socket create err\n");
@@ -48,9 +48,11 @@ bool sockOperator::connectServer(){
 
 	return true;
 }
-bool sockOperator::sendInfo(struct packet info){
-	int ret =  send(destAddress, info, sizeof(struct packet), 0);
-	
+bool sockOperator::sendInfo(string info){
+//	int ret =  send(destAddress, info.c_str(), sizeof(info.length()), 0);
+
+
+	int ret =  send(sockfd, "nihao", sizeof("nihao"), 0);
 	if (ret != sizeof(struct packet)){
 		mylog("errlog.txt", "Send Msg err\n");
 

@@ -50,7 +50,9 @@ class sockOperator{
 		int sockfd;
 
 
-}
+};
 
 
 }
+
+#endif
