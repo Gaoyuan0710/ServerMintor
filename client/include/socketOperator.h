@@ -42,10 +42,12 @@ struct packet{
 class sockOperator{
 	public:
 		sockOperator(){}
-		bool setAddr(string dest, string port);
+		bool sendInfo(string info);
+		bool setAddrPort(string dest, string port);
+		bool connectServer();
 	private:
 		struct sockaddr_in destAddress;
-	
+		int sockfd;
 
 
 }
