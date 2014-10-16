@@ -24,23 +24,30 @@
 namespace mySystemMintor{
 bool sockOperator::setAddrPort(string dest, string port){	
 	bzero(&destAddress, sizeof(destAddress));
-	destAddress.sin_family = AF_INET;
-	destAddress.sin_port = htons(atoi(port.c_str()));
-	inet_pton(AF_INET, dest.c_str(), &destAddress.sin_port);
+	this->destAddress.sin_family = AF_INET;
+	this->destAddress.sin_port = htons(atoi(port.c_str()));
+	if (inet_pton(AF_INET, dest.c_str(), &destAddress.sin_addr) <= 0){
+		printf("inet_pton error");
+	}
 
 	return true;
 }
 bool sockOperator::connectServer(){
-	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+
+
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (sockfd < 0){
 		mylog("errlog.txt", "Socket create err\n");
 
 		exit (-1);
 	}
-	int ret = connect(sockfd, (struct sockaddr *) & destAddress, 
+	
+	int ret = connect(sockfd, (struct sockaddr *) &destAddress, 
 				sizeof(destAddress));
 	if (ret != 0){
+		printf ("%d\n", ret);
+		perror("connect error");
 		mylog("errlog.txt", "Connect err\n");
 
 		exit (-1);

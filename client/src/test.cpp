@@ -24,7 +24,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	sockOperator testSocket;
-	testSocket.setAddrPort("127.0.0.1", "6666");
+	testSocket.setAddrPort("127.0.0.1", "9877");
 	testSocket.connectServer();
 
 	cout << "i" << endl;
