@@ -1,0 +1,8 @@
+package ServerInfo;
+option java_package = "com.mypackage";
+option java_outer_classname = "MyPackage";
+message InfoPackage{
+	required int32 infoTypes = 1;
+	required int32 infoLen = 2;
+	required string infoData = 3;
+}
