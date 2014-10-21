@@ -1,11 +1,11 @@
 // =====================================================================================
 // 
-//       Filename:  test.cpp
+//       Filename:  msg.h
 //
 //    Description:  
 //
 //        Version:  1.0
-//        Created:  2014年10月15日 21时47分27秒
+//        Created:  2014年10月16日 19时41分12秒
 //       Revision:  none
 //       Compiler:  g++
 //
@@ -16,25 +16,4 @@
 
 #include <iostream>
 
-#include "socketOperator.cpp"
-
-using namespace mySystemMintor;
-using namespace std;
-
-int main(int argc, char *argv[])
-{
-	sockOperator testSocket;
-	testSocket.setAddrPort("127.0.0.1", "9877");
-	testSocket.connectServer();
-
-	cout << "i" << endl;
-
-	while (1){
-		testSocket.sendInfo("niaho");
-		cout << "o" ;
-	}
-
-
-	return 0;
-}
 

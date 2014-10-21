@@ -23,6 +23,8 @@
 #include <netinet/in.h>
 #include <string>
 
+#include "ServerInfo.pb.h"
+
 using std::string;
 using std::cout;
 using std::cin;
@@ -42,7 +44,9 @@ struct packet{
 class sockOperator{
 	public:
 		sockOperator(){}
-		bool sendInfo(string info);
+		bool sendInfo(char *info, int len);
+		void msgSerialize(struct packet info, char *buf, int len);
+//		string msgDeserialize(ServerInfo::InfoPackage msg);
 		bool setAddrPort(string dest, string port);
 		bool connectServer();
 	private:

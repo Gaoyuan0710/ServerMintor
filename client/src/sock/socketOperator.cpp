@@ -18,8 +18,9 @@
 #include <strings.h>
 #include <stdlib.h>
 
-#include "../include/socketOperator.h"
-#include "log.cpp"
+#include "../../include/socketOperator.h"
+#include "../../include/ServerInfo.pb.h"
+#include "../log/log.cpp"
 
 namespace mySystemMintor{
 bool sockOperator::setAddrPort(string dest, string port){	
@@ -55,8 +56,8 @@ bool sockOperator::connectServer(){
 
 	return true;
 }
-bool sockOperator::sendInfo(struct packet info){
-	int ret =  send(destAddress, info, sizeof(struct packet), 0);
+bool sockOperator::sendInfo(char *info, int len){
+	int ret =  send(destAddress, info, len, 0);
 
 	if (ret != sizeof(struct packet)){
 		mylog("errlog.txt", "Send Msg err\n");
@@ -65,6 +66,13 @@ bool sockOperator::sendInfo(struct packet info){
 	}
 
 	return true;
+}
+void sockOperator::msgSerialize(struct packet Info, char *buf, int len){
+	senddata.set_infotypes(Info.types);
+	senddata.set_infolen(Info.len);
+	senddata.set_infodata(Info.value);
+
+	senddata.SerializeToArray(buf, len);
 }
 
 }

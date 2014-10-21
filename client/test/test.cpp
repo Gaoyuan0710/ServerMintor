@@ -1,11 +1,11 @@
 // =====================================================================================
 // 
-//       Filename:  errno.cpp
+//       Filename:  test.cpp
 //
 //    Description:  
 //
 //        Version:  1.0
-//        Created:  2014年10月15日 19时53分31秒
+//        Created:  2014年10月15日 21时47分27秒
 //       Revision:  none
 //       Compiler:  g++
 //
@@ -15,26 +15,27 @@
 // =====================================================================================
 
 #include <iostream>
-#include <string>
-#include <fstream>
+#include <unistd.h>
 
+#include "socketOperator.cpp"
+
+using namespace mySystemMintor;
 using namespace std;
-using std::cin;
-using std::cout;
-using std::endl;
-using std::string;
-using std::fstream;
 
-namespace mySystemMintor{
+int main(int argc, char *argv[])
+{
+	sockOperator testSocket;
+	testSocket.setAddrPort("127.0.0.1", "9877");
+	testSocket.connectServer();
 
-bool mylog(string filename, string err){
-	ofstream outfile;
 
-	outfile.open(filename.c_str(), ios::app | ios::ate);
-	outfile.write(err.c_str(), (streamsize)err.length());
+	while (1){
+		testSocket.sendInfo("niaho");
 
-	outfile.close();
-}
+		sleep(1);
+	}
 
+
+	return 0;
 }
 
