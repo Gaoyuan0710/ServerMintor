@@ -1,5 +1,4 @@
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.HttpResponse;
@@ -8,26 +7,15 @@ import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.EndOfDataDec
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.util.CharsetUtil;
-
-import javax.xml.transform.OutputKeys;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import static io.netty.buffer.Unpooled.compositeBuffer;
 import static io.netty.buffer.Unpooled.copiedBuffer;
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
-
 import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 
 /**
@@ -66,10 +54,10 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
             }
             if (uri.getPath().equals("/")) {
                 System.out.println("Here");
-                writeResponse(ctx);
+         //       writeResponse(ctx);
 
 
-         //       writeMenu(ctx);
+                writeMenu(ctx);
                 return;
             }
             if (request.getMethod().equals(HttpMethod.POST)) {

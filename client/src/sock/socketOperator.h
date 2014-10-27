@@ -34,6 +34,12 @@ using std::endl;
 
 namespace mySystemMintor{
 
+struct mypacket{
+	int types;
+	int len;
+	char value[100];
+};
+
 class sockOperator{
 	public:
 		sockOperator(){}

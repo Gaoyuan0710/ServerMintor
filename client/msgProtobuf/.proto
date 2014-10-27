@@ -1,7 +1,0 @@
-package ServerInfo;
-
-message Packet{
-	required int32 types = 1;
-	required int32 len = 2;
-	required string value = 3;
-}
