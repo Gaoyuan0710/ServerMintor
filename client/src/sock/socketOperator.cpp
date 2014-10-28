@@ -18,8 +18,8 @@
 #include <strings.h>
 #include <stdlib.h>
 
-#include "../../include/socketOperator.h"
-#include "../../include/ServerInfo.pb.h"
+#include "socketOperator.h"
+#include "ServerInfo.pb.h"
 #include "../log/log.cpp"
 
 namespace mySystemMintor{
@@ -57,9 +57,12 @@ bool sockOperator::connectServer(){
 	return true;
 }
 bool sockOperator::sendInfo(char *info, int len){
-	int ret =  send(destAddress, info, len, 0);
+	int ret =  send(sockfd, info, len, 0);
 
-	if (ret != sizeof(struct packet)){
+//	int ret =  send(sockfd, "nihaoma", sizeof("nihaoma"), 0);
+	cout << "Send " << ret << endl;
+
+	if (ret != len ){
 		mylog("errlog.txt", "Send Msg err\n");
 
 		return false;
@@ -67,13 +70,13 @@ bool sockOperator::sendInfo(char *info, int len){
 
 	return true;
 }
-void sockOperator::msgSerialize(struct packet Info, char *buf, int len){
+void sockOperator::msgSerialize(struct mypacket Info, char *buf, int len){
 	senddata.set_infotypes(Info.types);
 	senddata.set_infolen(Info.len);
 	senddata.set_infodata(Info.value);
 
+//	senddata.SerializeToArray(buf, senddata.ByteSize())
 	senddata.SerializeToArray(buf, len);
 }
 
 }
-

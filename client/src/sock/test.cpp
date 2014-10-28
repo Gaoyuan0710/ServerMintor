@@ -27,21 +27,20 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	sockOperator testSocket;
-	testSocket.setAddrPort("127.0.0.1", "9877");
+	testSocket.setAddrPort("127.0.0.1", "8089");
 	testSocket.connectServer();
 
 
 	struct mypacket Info;
 	Info.types = 1;
 	Info.len = 2;
-	Info.value = "hello";
+	Info.value = "nihaommmm";
 
 	char tmp[100];
-	ServerInfo::InfoPackage msg;
-	testSocket.msgSerialize(myInfo, tmp, sizeof(struct packet));
+	testSocket.msgSerialize(Info, tmp, sizeof(struct mypacket));
 
 	while (1){
-		testSocket.sendInfo(tmp, sizeof(struct packet);
+		testSocket.sendInfo(tmp, testSocket.getPacketLen());
 
 		sleep(1);
 	}
