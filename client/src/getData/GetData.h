@@ -27,10 +27,14 @@ using std::string;
 
 class GetData{
 	public:
-		GetData(int type = 0){}
+		GetData(int type = 0):WAIT_TIME(1){}
 		string getInfo(int types);
 		string getError();
 		string getClientInfo();
 		string getCpuInfo();
+		string getMemInfo();
+		string getCpuRate();
+	private:
+		const int WAIT_TIME;
 
 };

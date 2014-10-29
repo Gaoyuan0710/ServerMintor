@@ -25,7 +25,7 @@ using std::cout;
 int main(int argc, char *argv[])
 {
 	GetData test(1);
-	cout << " " << test.getInfo(1) << endl;
+	cout << " " << test.getInfo(4) << endl;
 
 	return 0;
 }
