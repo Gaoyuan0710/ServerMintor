@@ -31,5 +31,6 @@ class GetData{
 		string getInfo(int types);
 		string getError();
 		string getClientInfo();
+		string getCpuInfo();
 
 };

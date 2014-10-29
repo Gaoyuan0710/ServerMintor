@@ -50,10 +50,10 @@ string GetData::getClientInfo(){
 		Info.append(ClientInfo.domainname);
 		Info.append(" ");
 
-
 		return Info;
 	}
 
 	Info.append("Info Get Error");
 	return Info;
 }
+string Ge
