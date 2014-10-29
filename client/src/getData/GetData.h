@@ -17,7 +17,7 @@
 #include <iostream>
 #include <string>
 
-#include "Info.h"
+//#include "Info.h"
 
 using std::endl;
 using std::cout;
@@ -25,11 +25,11 @@ using std::cin;
 using std::string;
 
 
-class getData{
+class GetData{
 	public:
-		getData(int type = 0){}
-		string getInfo();
+		GetData(int type = 0){}
+		string getInfo(int types);
 		string getError();
 		string getClientInfo();
 
-}
+};
