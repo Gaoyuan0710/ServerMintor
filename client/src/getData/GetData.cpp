@@ -98,12 +98,14 @@ string GetData::getCpuRate(){
 	char cpu[5];
 	char tmp[256];
 	string Info = "";
-	long int user, nice, sys, idle, iowait, irq, softirq;
-	long int all1, all2, idle1, idle2;
-	float usage;
+	long int user[5], nice[5], sys[5], idle[5], iowait[5], irq[5], softirq[5];
+	long int all1[5], all2[5], idle1[5], idle2[5];
+	float usage[5];
 
-	int i = 5;
-	while (i--){
+	long int user_pass[5], sys_pass[5], idle_pass[5];
+
+	int j = 5;
+	while (j--){
 		fp = fopen("/proc/stat", "r");
 	
 		if (fp == NULL){
@@ -111,38 +113,71 @@ string GetData::getCpuRate(){
 
 			return Info;
 		}
-
-		fgets(buf, sizeof(buf), fp);
-		sscanf(buf, "%s%d%d%d%d%d%d%d", cpu, &user, &nice, &sys,
-					&idle, &iowait, &irq, &softirq);
-
-		all1 = user + nice + sys + idle + iowait + irq + softirq;
-		idle1 = idle;
-
+		int i = 0;
+		while (i < 5){
+			fgets(buf, sizeof(buf), fp);
+			sscanf(buf, "%s%d%d%d%d%d%d%d", cpu, &user[i], &nice[i], &sys[i],
+						&idle[i], &iowait[i], &irq[i], &softirq[i]);
+			
+			all1[i] = user[i] + nice[i] + sys[i] + idle[i] + iowait[i] + irq[i] + softirq[i];
+			idle1[i] = idle[i];
+			user_pass[i] = user[i] + sys[i];
+			i++;
+		}
 		rewind(fp);
 		sleep(WAIT_TIME);
 		memset(buf, 0, sizeof(buf));
 	
-		user = nice = sys = idle = iowait = irq = softirq = 0;
+		memset(user, 0, sizeof(user));
+		memset(nice, 0, sizeof(nice));
+		memset(sys, 0, sizeof(sys));
+		memset(idle, 0, sizeof(idle));
+		memset(irq, 0, sizeof(irq));
+		memset(softirq, 0, sizeof(softirq));
+		memset(iowait, 0, sizeof(iowait));
+	
+	
+	//	user = nice = sys = idle = iowait = irq = softirq = 0;
 
-		fgets(buf, sizeof(buf), fp);
-		sscanf(buf, "%s%d%d%d%d%d%d%d", cpu, &user, &nice, &sys,
-					&idle, &iowait, &irq, &softirq);
-		all2 = user + nice + sys + idle + iowait + irq + softirq;
-		idle2 = idle;
+		i = 0;
 
-		usage = (float) (all2 - all1 - (idle2 - idle1)) / (all2 - \
-					all1) * 100;
+		while (i < 5){
+			fgets(buf, sizeof(buf), fp);
+			sscanf(buf, "%s%d%d%d%d%d%d%d", cpu, &user[i], &nice[i], &sys[i],
+						&idle[i], &iowait[i], &irq[i], &softirq[i]);
+			
+			all2[i] = user[i] + nice[i] + sys[i] + idle[i] + iowait[i] + irq[i] + softirq[i];
+			idle2[i] = idle[i];
+			sys_pass[i] = user[i] + sys[i];
+			i++;
+		}
+		i = 0;
+		while (i < 5){
+			usage[i] = ((float) (user_pass[i] - sys_pass[i]) )/ (user_pass[i] - sys_pass[i] - idle2[i] + idle1[i]) * 100;
 
-		cout << "Cpu Use " << usage << endl;
+		//	usage[i] = ((float) (user2[i] + sys2[i] - user1[i] - sys ) )/ (user[i] + nice[i] + sys[i] + idle[i])  * 100;
+			cout << i << " : " << usage[i] << endl;
+			i++;
+		}
+		i = 0;
 
-		Info.append("Cpu Use ");
+	/*	while (i < 5){
+			if (i == 0){
+				cout << "Cpu Use " << usage[i] << endl;
+				i++;
+				continue;
+			}
+	
+			cout << "Cpu" << i << " Use " << usage[i] << endl;
 
-		sprintf(tmp, "%.2f", usage);
-
-		Info.append(tmp);
+		//		Info.append("Cpu Use ");
+	//		sprintf(tmp, "%.2f", usage);
+	//		Info.append(tmp);
+			i++;
+		}
+		j--;*/
+	//	close(fp);
 	}
-	close(fp);
 	return Info;
 
 }
