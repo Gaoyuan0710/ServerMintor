@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <sys/utsname.h>
+#include <sys/sysinfo.h>
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -34,6 +35,8 @@ string GetData::getInfo(int type){
 			 return getCpuInfo();
 		case CpuRate:
 			 return getCpuRate();
+		case MemInfo:
+			 return getMemInfo();
 	}
 }
 string GetData::getError(){
@@ -74,24 +77,6 @@ string GetData::getCpuInfo(){
 	Info.append("Info Get Error");
 	return Info;
 }
-
-string GetData::getMemInfo(){
-	FILE *pp;
-	string Info = "";
-	char buffer [128];
-
-	pp = popen("vmstat", "r");
-
-	if (fgets(buffer, sizeof(buffer), pp) != NULL){
-		Info.append(buffer);
-
-		return Info;
-	}
-
-	Info.append("Info Get Error");
-	return Info;
-}
-
 string GetData::getCpuRate(){
 	FILE *fp;
 	char buf[128];
@@ -135,14 +120,51 @@ string GetData::getCpuRate(){
 	}
 	i = 0;
 	while (i < 5){
-		cout << "Cpu" << i << " Use " << usage[i] << endl;
-		Info.append("Cpu Use ");
+		if (i == 0 ){
+			Info.append("Cpu Total :");
+			sprintf(tmp, "%.2f", usage[i]);
+			Info.append(tmp);
+			Info.append("%\n");
+			i++;
+			continue;
+		}
+		Info.append("Cpu");
+		Info.append(":");
+		Info += i;
 		sprintf(tmp, "%.2f", usage[i]);
 		Info.append(tmp);
-		Info.append("\n");
+		Info.append("%\n");
 		i++;
 	}
 	fclose(fp);
 	return Info;
 }
+string GetData::getMemInfo(){
+	string Info = "";
+	struct sysinfo sys;
+	int flag;
+	char tmp[128];
 
+	flag = sysinfo(&sys);
+	if (flag == 0){
+		Info.append("MemTotal:");
+		sprintf(tmp, "%d", sys.totalram / (1024 * 1024));
+		Info.append(tmp);
+		
+		Info.append("\nMemFree:");
+		sprintf(tmp, "%d", sys.freeram / (1024 * 1024));
+		Info.append(tmp);
+		
+		Info.append("\nSwapTotal:");
+		sprintf(tmp, "%d", sys.totalswap / (1024 * 1024));
+		Info.append(tmp);
+		
+		Info.append("\nSwapFree:");
+		sprintf(tmp, "%d", sys.freeswap / (1024 * 1024));
+		Info.append(tmp);
+	}
+	else{
+		Info.append("Get Info Error");
+	}
+	return Info;
+}
