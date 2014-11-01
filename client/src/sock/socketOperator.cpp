@@ -22,7 +22,6 @@
 #include "ServerInfo.pb.h"
 #include "../log/log.cpp"
 
-namespace mySystemMintor{
 bool sockOperator::setAddrPort(string dest, string port){	
 	bzero(&destAddress, sizeof(destAddress));
 	this->destAddress.sin_family = AF_INET;
@@ -58,8 +57,7 @@ bool sockOperator::connectServer(){
 }
 bool sockOperator::sendInfo(char *info, int len){
 	int ret =  send(sockfd, info, len, 0);
-
-//	int ret =  send(sockfd, "nihaoma", sizeof("nihaoma"), 0);
+	
 	cout << "Send " << ret << endl;
 
 	if (ret != len ){
@@ -70,13 +68,4 @@ bool sockOperator::sendInfo(char *info, int len){
 
 	return true;
 }
-void sockOperator::msgSerialize(struct mypacket Info, char *buf, int len){
-	senddata.set_infotypes(Info.types);
-	senddata.set_infolen(Info.len);
-	senddata.set_infodata(Info.value);
 
-//	senddata.SerializeToArray(buf, senddata.ByteSize())
-	senddata.SerializeToArray(buf, len);
-}
-
-}

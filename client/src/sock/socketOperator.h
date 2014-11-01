@@ -33,32 +33,21 @@ using std::string;
 
 #define BUFLINE 1024
 
-namespace mySystemMintor{
 
-struct mypacket{
-	int types;
-	int len;
-	string value;
-};
 
 class sockOperator{
 	public:
-		int getPacketLen(){return senddata.ByteSize();}
 		sockOperator(){}
 		bool sendInfo(char *info, int len);
-		void msgSerialize(struct mypacket info, char *buf, int len);
-//		string msgDeserialize(ServerInfo::InfoPackage msg);
 		bool setAddrPort(string dest, string port);
 		bool connectServer();
 	private:
 		struct sockaddr_in destAddress;
 		int sockfd;
-		ServerInfo::InfoPackage senddata;
 
 
 };
 
 
-}
 
 #endif
