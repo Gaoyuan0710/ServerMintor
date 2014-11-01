@@ -30,7 +30,7 @@ class InfoProtoBuf{
 		static bool packing(string info, int type, struct mypacket *
 					infoPacket);
 		static bool msgSerialize(struct mypacket *infoPacket, 
-					ServerInfo::InfoPackage senddata, char *buf);
+					ServerInfo::InfoPackage *senddata, char *buf);
 
 
 };

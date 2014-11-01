@@ -28,12 +28,13 @@ bool InfoProtoBuf::packing(string info, int type, struct mypacket *infoPacket){
 	return true;
 }
 
-bool InfoProtoBuf::msgSerialize(struct mypacket *infoPacket, ServerInfo::InfoPackage senddata, char *buf){
-	senddata.set_infotypes(infoPacket->infoTypes);
-	senddata.set_infodata(infoPacket->infoDate);
-	senddata.set_infolen(infoPacket->infoLen);
+bool InfoProtoBuf::msgSerialize(struct mypacket *infoPacket, ServerInfo::InfoPackage *senddata, char *buf){
+	
+	senddata->set_infotypes(infoPacket->infoTypes);
+	senddata->set_infodata(infoPacket->infoDate);
+	senddata->set_infolen(infoPacket->infoLen);
 
-	senddata.SerializeToArray(buf, senddata.ByteSize());
+	senddata->SerializeToArray(buf, senddata->ByteSize());
 
 	return true;
 }
