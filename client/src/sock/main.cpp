@@ -62,9 +62,6 @@ int main(int argc, char *argv[])
 
 			return -1;
 		}
-		cout << "Send " << endl;
-		cout << senddata.ByteSize() << endl;
-		cout << temp << endl;
 		sockop.sendInfo(temp, senddata.ByteSize());
 		info = "";
 		sleep(5);

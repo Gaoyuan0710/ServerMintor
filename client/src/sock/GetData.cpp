@@ -1,8 +1,8 @@
 // =====================================================================================
-// 
+//
 //       Filename:  GetData.cpp
 //
-//    Description:  
+//    Description:
 //
 //        Version:  1.0
 //        Created:  2014年10月28日 20时52分08秒
@@ -11,7 +11,7 @@
 //
 //         Author:  Gaoyuan, sishuiliunian0710@gmail.com
 //        Company:  Class 1204 of Computer Science and Technology
-// 
+//
 // =====================================================================================
 
 #include <iostream>
@@ -38,9 +38,10 @@ string GetData::getInfo(int type){
 		case MemInfo:
 			 return getMemInfo();
 	}
+	return getError();
 }
 string GetData::getError(){
-	string errInfo = "No Such Client";
+	string errInfo = "{\"Error\":\"No Such Client\"}";
 
 	return errInfo;
 }
@@ -52,12 +53,16 @@ string GetData::getClientInfo(){
 	pp = popen("uname -a", "r");
 
 	if (fgets(buffer, sizeof(buffer), pp) != NULL){
+		Info.append("{\"BaseInfo\":\"");
 		Info.append(buffer);
+		Info = Info.substr(0, Info.length() - 1);
+		Info.append("\"}");
 
 		return Info;
 	}
 
-	Info.append("Info Get Error");
+	Info.append("{\"Error\":\"No Such Client\"}");
+
 	return Info;
 }
 
@@ -69,12 +74,14 @@ string GetData::getCpuInfo(){
 	pp = popen("cat /proc/cpuinfo |grep name |cut -f2 -d: |uniq -c", "r");
 
 	if (fgets(buffer, sizeof(buffer), pp) != NULL){
+		Info.append("{\"CpuInfo\":\"");
 		Info.append(buffer);
+		Info.append("\"}");
 
 		return Info;
 	}
 
-	Info.append("Info Get Error");
+	Info.append("{\"Error\":\"No Such Client\"}");
 	return Info;
 }
 string GetData::getCpuRate(){
@@ -87,17 +94,16 @@ string GetData::getCpuRate(){
 	long  all1[5], all2[5];
 	float usage[5];
 	long int tt1[5], tt2[5];
-	int j = 2;
-	
+
 	fp = fopen("/proc/stat", "r");
 	if (fp == NULL){
-		Info.append("Info Get Error");
+		Info.append("{\"Error\":\"No Such Client\"}");
 		return Info;
 	}
 	int i = 0;
 	while (i < 5){
 		fgets(buf, sizeof(buf), fp);
-		sscanf(buf, "%s %ld %ld %ld %ld %ld %ld %ld", cpu, &user[i], &nice[i], 
+		sscanf(buf, "%s %ld %ld %ld %ld %ld %ld %ld", cpu, &user[i], &nice[i],
 					&sys[i], &idle[i], &iowait[i], &irq[i], &softirq[i]);
 		all1[i] = user[i] + nice[i] + sys[i] + idle[i] + iowait[i] + irq[i] + softirq[i];
 		tt1[i] = user[i] + sys[i];
@@ -105,13 +111,13 @@ string GetData::getCpuRate(){
 	}
 	sleep(2);
 	fclose(fp);
-	
+
 	fp = fopen("/proc/stat", "r");
 	rewind(fp);
 	i = 0;
 	while (i < 5){
 		fgets(buf, sizeof(buf), fp);
-		sscanf(buf, "%s %ld %ld %ld %ld %ld %ld %ld", cpu, &user[i], &nice[i], &sys[i], 
+		sscanf(buf, "%s %ld %ld %ld %ld %ld %ld %ld", cpu, &user[i], &nice[i], &sys[i],
 					&idle[i], &iowait[i], &irq[i], &softirq[i]);
 		all2[i] = user[i] + nice[i] + sys[i] + idle[i] + iowait[i] + irq[i] + softirq[i];
 		tt2[i] = user[i] + sys[i];
@@ -121,19 +127,19 @@ string GetData::getCpuRate(){
 	i = 0;
 	while (i < 5){
 		if (i == 0 ){
-			Info.append("Cpu Total :");
+			Info.append("{\"Cpu Total \":\"");
 			sprintf(tmp, "%.2f", usage[i]);
 			Info.append(tmp);
-			Info.append("%\n");
+			Info.append("%\"}");
 			i++;
 			continue;
 		}
-		Info.append("Cpu");
-		Info.append(":");
+		Info.append("{\"Cpu\"");
+		Info.append(":\"");
 		Info += i;
 		sprintf(tmp, "%.2f", usage[i]);
 		Info.append(tmp);
-		Info.append("%\n");
+		Info.append("%\"}");
 		i++;
 	}
 	fclose(fp);
@@ -147,24 +153,32 @@ string GetData::getMemInfo(){
 
 	flag = sysinfo(&sys);
 	if (flag == 0){
-		Info.append("MemTotal:");
-		sprintf(tmp, "%d", sys.totalram / (1024 * 1024));
+		Info.append("{\"MemTotal\":\"");
+		sprintf(tmp, "%d", (int)sys.totalram / (1024 * 1024));
 		Info.append(tmp);
-		
-		Info.append("\nMemFree:");
-		sprintf(tmp, "%d", sys.freeram / (1024 * 1024));
+		Info.append("\"}");
+
+		Info.append("{\"MemFree\":\"");
+		sprintf(tmp, "%d", (int)sys.freeram / (1024 * 1024));
 		Info.append(tmp);
-		
-		Info.append("\nSwapTotal:");
-		sprintf(tmp, "%d", sys.totalswap / (1024 * 1024));
+		Info.append("\"}");
+
+
+		Info.append("{\"SwapTotal\":\"");
+		sprintf(tmp, "%d", (int)sys.totalswap / (1024 * 1024));
 		Info.append(tmp);
-		
-		Info.append("\nSwapFree:");
-		sprintf(tmp, "%d", sys.freeswap / (1024 * 1024));
+		Info.append("\"}");
+
+
+		Info.append("{\"SwapFree\":\"");
+		sprintf(tmp, "%d", (int)sys.freeswap / (1024 * 1024));
 		Info.append(tmp);
+		Info.append("\"}");
+
 	}
 	else{
-		Info.append("Get Info Error");
+		Info.append("{\"Error\":\"Get Info Error\"}");
+		return Info;
 	}
 	return Info;
 }

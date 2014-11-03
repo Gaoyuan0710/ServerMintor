@@ -25,7 +25,6 @@ using std::endl;
 using std::string;
 using std::fstream;
 
-namespace mySystemMintor{
 
 bool mylog(string filename, string err){
 	ofstream outfile;
@@ -34,7 +33,5 @@ bool mylog(string filename, string err){
 	outfile.write(err.c_str(), (streamsize)err.length());
 
 	outfile.close();
-}
-
 }
 
