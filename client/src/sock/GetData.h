@@ -35,5 +35,6 @@ class GetData{
 		string getCpuInfo();
 		string getMemInfo();
 		string getCpuRate();
+		string getNetWorkStatus();
 
 };

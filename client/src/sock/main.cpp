@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 		GetData getData;
 		char temp[256];
 	
-		info.append(getData.getInfo(ClientListInfo));
+		info.append(getData.getInfo(NetWorkInfo));
 		cout << info << endl; 
 		flag = InfoProtoBuf::packing(info, ClientListInfo, &packet);
 
