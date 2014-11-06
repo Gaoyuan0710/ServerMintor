@@ -198,7 +198,7 @@ string GetData::getNetWorkStatus(){
 	unsigned long bytesRecv;
 	unsigned long bytesTrans;
 	int flag = 0;
-	string Info = "";
+	string Info = "{\"NetWorkInfo\":[";
 	vector <long int> usefulData1;
 	vector <long int> usefulData2;
 	vector <string> devName;
@@ -239,18 +239,22 @@ string GetData::getNetWorkStatus(){
 		usefulData2.push_back(bytesTrans);
 	}
 	int i = 0;
+	char tmp[100];
 	while (i < devName.size()){
 		unsigned long rate = (usefulData2[2 * i] + usefulData2[2 * i + 1] - usefulData1[2 * i] - usefulData1[2 * i + 1])/(1024);
 		cout << devName[i] << " " << rate << endl;
 		Info.append("{\"");
 		Info.append(devName[i]);
 		Info.append("\":\"");
-		Info += rate;
-		Info.append("kb/s\"");
+		sprintf(tmp, "%d", (int)rate);
+		Info.append(tmp);
+		Info.append("kb/s\"},");
 		i++;
 	}
+	Info = Info.substr(0, Info.find_last_of(","));
+	Info.append("]}");
 	reader2.close();
 
-	return " ";
+	return Info;
 }
 
