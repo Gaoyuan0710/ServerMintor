@@ -24,7 +24,8 @@ enum InfoType{
 	ClientListInfo = 1,
 	CpuInfo = 2,
 	MemInfo = 3,
-	CpuRate = 4
+	CpuRate = 4,
+	NetWorkInfo = 5
 
 };
 struct mypacket{

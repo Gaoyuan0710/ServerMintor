@@ -27,8 +27,6 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
 
     private boolean readingChunks;
 
-    private final StringBuilder responseContent = new StringBuilder();
-
     private static final HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); //Disk
 
     private HttpPostRequestDecoder decoder;
@@ -42,18 +40,18 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
 
     public void messageReceived(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
 
-        System.err.println(msg.getClass().getName());
+     //   System.err.println(msg.getClass().getName());
 
         if (msg instanceof HttpRequest) {
             HttpRequest request = this.request = (HttpRequest) msg;
             URI uri = new URI(request.getUri());
-            System.err.println("request uri==" + uri.getPath());
+       //     System.err.println("request uri== " + uri.getPath());
 
             if (uri.getPath().equals("/favicon.ico")) {
                 return;
             }
             if (uri.getPath().equals("/")) {
-                System.out.println("Here");
+         //       System.out.println("Here");
          //       writeResponse(ctx);
 
 
@@ -61,7 +59,7 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
                 return;
             }
             if (request.getMethod().equals(HttpMethod.POST)) {
-                System.err.println("===this is http post===");
+           //     System.err.println("===this is http post===");
                 try {
                     /**
                      * 通过HttpDataFactory和request构造解码器
@@ -115,7 +113,7 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
     }
 
     private void writeMenu(ChannelHandlerContext ctx) {
-        ByteBuf buf = copiedBuffer("<html>\n <body>\n <h1>My First Heading</h1>\n\n<p>My first paragraph.</p>\n\n</body>\n </html>".toString(), CharsetUtil.UTF_8);
+        ByteBuf buf = copiedBuffer("<html>\n <body>\n <h1>Hi Cuijiaojiao</h1>\n\n<p>My first paragraph.</p>\n\n</body>\n </html>".toString(), CharsetUtil.UTF_8);
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
         response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
@@ -154,13 +152,14 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
                 }
             }catch (Exception e2) {
             e2.printStackTrace();
-        } finally {
-            if (keepAlive) {
-                System.out.println("keppLive");
-            }
-            if (!keepAlive) {
-                System.out.println("Death");
-            }
+
+            } finally {
+                if (keepAlive) {
+                    System.out.println("keppLive");
+                }
+                if (!keepAlive) {
+                    System.out.println("Death");
+                }
             }
         }
     }
