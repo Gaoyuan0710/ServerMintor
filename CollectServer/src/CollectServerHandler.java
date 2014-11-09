@@ -1,17 +1,24 @@
 import com.mypackage.MyPackage;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
+import org.json.JSONException;
+
 
 /**
  * Created by gaoyuan on 14-10-27.
  */
 public class CollectServerHandler extends ChannelHandlerAdapter{
-    public void channelRead(ChannelHandlerContext ctx,  MyPackage.InfoPackage msg) {
-        System.out.println("The Type is " + msg.getInfoTypes());
-        System.out.println("The Len is " + msg.getInfoLen());
-        System.out.println("The Data is " + msg.getInfoData());
-        ctx.write(msg.getInfoTypes());
+    public void channelRead(ChannelHandlerContext ctx,  Object msgdata) throws Exception {
+        MyPackage.InfoPackage  data = (MyPackage.InfoPackage)msgdata;
 
+        System.out.println(data.getInfoTypes());
+        System.out.println(data.getInfoLen());
+
+        try {
+            AnalyticalToJson.StringAnalyticalToJson(data.getInfoData());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -18,6 +18,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="netty-all-5.0.0.Alpha1" level="project" />
     <orderEntry type="library" name="protobuf-java-2.5.0" level="project" />
+    <orderEntry type="library" name="json-org" level="project" />
+    <orderEntry type="library" name="mysql-connector-java-5.1" level="project" />
   </component>
 </module>
 

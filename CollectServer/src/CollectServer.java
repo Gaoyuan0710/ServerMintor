@@ -4,9 +4,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
-import io.netty.handler.codec.protobuf.ProtobufEncoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
-import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+
 
 import com.mypackage.MyPackage;
 
@@ -17,6 +15,7 @@ public final  class CollectServer {
     static final int PORT = Integer.parseInt(System.getProperty("port", "8089"));
 
     public static void main(String[] args) throws Exception {
+
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -28,10 +27,7 @@ public final  class CollectServer {
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {
                             ChannelPipeline p = ch.pipeline();
-               //             p.addLast("frameDecoder", new ProtobufVarint32FrameDecoder());
                             p.addLast("protobufDecoder", new ProtobufDecoder(MyPackage.InfoPackage.getDefaultInstance()));
-               //             p.addLast("frameEncoder", new ProtobufVarint32LengthFieldPrepender());
-                            p.addLast("protobufEncoder", new ProtobufEncoder());
                             p.addLast(new CollectServerHandler());
                         }
                     });
