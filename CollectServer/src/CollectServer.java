@@ -14,8 +14,7 @@ import com.mypackage.MyPackage;
 public final  class CollectServer {
     static final int PORT = Integer.parseInt(System.getProperty("port", "8089"));
 
-    public static void main(String[] args) throws Exception {
-
+    public static void CollectStart(){
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -33,9 +32,15 @@ public final  class CollectServer {
                     });
             ChannelFuture f = b.bind(PORT).sync();
             f.channel().closeFuture().sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+    public static void main(String[] args) {
+        HttpServer myHttpServer = new HttpServer(8080);
+        CollectStart();
     }
 }

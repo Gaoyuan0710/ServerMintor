@@ -12,6 +12,7 @@ public class CollectServerHandler extends ChannelHandlerAdapter{
         MyPackage.InfoPackage  data = (MyPackage.InfoPackage)msgdata;
 
         System.out.println(data.getInfoTypes());
+        System.out.println(InfoType.getInfoType(data.getInfoTypes()));
         System.out.println(data.getInfoLen());
 
         try {
