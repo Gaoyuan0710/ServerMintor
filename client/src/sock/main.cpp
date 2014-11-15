@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
 	sockOperator sockop;
 	sockop.setAddrPort("127.0.0.1", "8089");
 	sockop.connectServer();
+	int flag = 0;
 	
 	while (1){
 		bool flag;
@@ -41,8 +42,9 @@ int main(int argc, char *argv[])
 		ServerInfo::InfoPackage senddata;
 		GetData getData;
 		char temp[256];
+
 	
-		info.append(getData.getInfo(NetWorkInfo));
+		info.append(getData.getInfo(i % 5 + 1));
 		cout << info << endl; 
 		flag = InfoProtoBuf::packing(info, ClientListInfo, &packet);
 
