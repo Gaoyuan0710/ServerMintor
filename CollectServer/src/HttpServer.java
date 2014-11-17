@@ -16,17 +16,19 @@ public class HttpServer {
         this.port = port;
     }
 
+   // public static void main(String argv[]){
     public void HttpStart() {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try{
+            System.out.println("ppppppppppppppppppp");
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new HttpServerInitializer());
 
-            Channel ch = bootstrap.bind(this.port).sync().channel();
+            Channel ch = bootstrap.bind(8080).sync().channel();
             ch.closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

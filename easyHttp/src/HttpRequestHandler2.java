@@ -39,42 +39,20 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
     }
 
     public void messageReceived(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
-
-     //   System.err.println(msg.getClass().getName());
-
         if (msg instanceof HttpRequest) {
             HttpRequest request = this.request = (HttpRequest) msg;
             URI uri = new URI(request.getUri());
-       //     System.err.println("request uri== " + uri.getPath());
-
             if (uri.getPath().equals("/favicon.ico")) {
                 return;
             }
             if (uri.getPath().equals("/")) {
-         //       System.out.println("Here");
-         //       writeResponse(ctx);
-
-
-                writeMenu(ctx);
+                System.out.println("Here");
+                writePage(ctx);
                 return;
             }
-            if (request.getMethod().equals(HttpMethod.POST)) {
-           //     System.err.println("===this is http post===");
-                try {
-                    /**
-                     * 通过HttpDataFactory和request构造解码器
-                     */
-                    decoder = new HttpPostRequestDecoder(factory, request);
-                } catch (ErrorDataDecoderException e1) {
-                    e1.printStackTrace();
-                    ctx.channel().close();
-                    return;
-                }
 
-                readingChunks = HttpHeaders.isTransferEncodingChunked(request);
-                if (readingChunks) {
-                    readingChunks = true;
-                }
+            if (request.getMethod().equals(HttpMethod.GET)){
+
             }
         }
 
@@ -104,7 +82,7 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
                 }
 
                 if (chunk instanceof LastHttpContent) {
-                     writeResponse(ctx);
+                     writePage(ctx);
                     readingChunks = false;
                     reset();
                 }
@@ -112,8 +90,8 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
         }
     }
 
-    private void writeMenu(ChannelHandlerContext ctx) {
-        ByteBuf buf = copiedBuffer("<html>\n <body>\n <h1>Hi Cuijiaojiao</h1>\n\n<p>My first paragraph.</p>\n\n</body>\n </html>".toString(), CharsetUtil.UTF_8);
+    private void writeString(ChannelHandlerContext ctx) {
+        ByteBuf buf = copiedBuffer("<html>\n <body>\n <h1>Hi Zhanyongjun</h1>\n\n<p>My {'hellok': 'world'}.</p>\n\n</body>\n </html>".toString(), CharsetUtil.UTF_8);
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
         response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
@@ -126,7 +104,7 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
         decoder.destroy();
         decoder = null;
     }
-    private void writeResponse(ChannelHandlerContext ctx) throws IOException {
+    private void writePage(ChannelHandlerContext ctx) throws IOException {
         boolean keepAlive = isKeepAlive(request);
         if ("/".equals(request.getUri())) {
             String info = "";
@@ -134,7 +112,9 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
             RandomAccessFile raf = new RandomAccessFile("/home/gaoyuan/MyStation/index.html", "r");
             MappedByteBuffer out = raf.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, raf.length());
             for (int i = 0; i < raf.length(); i++){
-                System.out.print(out.getChar());
+                byte tmp = out.get(i);
+                System.out.print((char)tmp);
+                info += (char)tmp;
             }
             ByteBuf buf = copiedBuffer(info, CharsetUtil.UTF_8);
             HttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, buf);
@@ -147,6 +127,7 @@ public class HttpRequestHandler2 extends SimpleChannelInboundHandler<HttpObject>
                 long fileLength = raf.length();
                 response.headers().set(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(fileLength));
                 ctx.channel().writeAndFlush(response);
+
                 if (!request.getMethod().equals(HttpMethod.HEAD)) {
                     ctx.channel().write(new ChunkedFile(raf, 0, fileLength, 8192));//8kb
                 }

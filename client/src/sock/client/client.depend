@@ -1,0 +1,83 @@
+# depslib dependency file v1.0
+1414985194 source:/home/gaoyuan/Code/ServerMonitor/client/src/sock/InfoProtoBuf.cpp
+	<iostream>
+	"InfoProtoBuf.h"
+	"ServerInfo.pb.h"
+	"Info.h"
+
+1414827069 /home/gaoyuan/Code/ServerMonitor/client/src/sock/InfoProtoBuf.h
+	<iostream>
+	<string>
+	"ServerInfo.pb.h"
+
+1414417345 /home/gaoyuan/Code/ServerMonitor/client/src/sock/ServerInfo.pb.h
+	<string>
+	<google/protobuf/stubs/common.h>
+	<google/protobuf/generated_message_util.h>
+	<google/protobuf/message.h>
+	<google/protobuf/repeated_field.h>
+	<google/protobuf/extension_set.h>
+	<google/protobuf/unknown_field_set.h>
+
+1414823273 /home/gaoyuan/Code/ServerMonitor/client/src/sock/Info.h
+	<iostream>
+	<string>
+
+1414985244 source:/home/gaoyuan/Code/ServerMonitor/client/src/sock/main.cpp
+	<iostream>
+	<string>
+	<unistd.h>
+	"InfoProtoBuf.h"
+	"Info.h"
+	"ServerInfo.pb.h"
+	"GetData.h"
+	"socketOperator.h"
+
+1414824296 /home/gaoyuan/Code/ServerMonitor/client/src/sock/GetData.h
+	<iostream>
+	<string>
+
+1414823737 /home/gaoyuan/Code/ServerMonitor/client/src/sock/socketOperator.h
+	<iostream>
+	<sys/socket.h>
+	<sys/types.h>
+	<arpa/inet.h>
+	<netinet/in.h>
+	<string>
+	"ServerInfo.pb.h"
+
+1414417133 source:/home/gaoyuan/Code/ServerMonitor/client/src/sock/ServerInfo.pb.cc
+	"ServerInfo.pb.h"
+	<algorithm>
+	<google/protobuf/stubs/common.h>
+	<google/protobuf/stubs/once.h>
+	<google/protobuf/io/coded_stream.h>
+	<google/protobuf/wire_format_lite_inl.h>
+	<google/protobuf/descriptor.h>
+	<google/protobuf/generated_message_reflection.h>
+	<google/protobuf/reflection_ops.h>
+	<google/protobuf/wire_format.h>
+
+1414985096 source:/home/gaoyuan/Code/ServerMonitor/client/src/sock/socketOperator.cpp
+	<iostream>
+	<strings.h>
+	<stdlib.h>
+	"socketOperator.h"
+	"ServerInfo.pb.h"
+	"../log/log.cpp"
+
+1414985930 /home/gaoyuan/Code/ServerMonitor/client/src/log/log.cpp
+	<iostream>
+	<string>
+	<fstream>
+
+1414986064 source:/home/gaoyuan/Code/ServerMonitor/client/src/sock/GetData.cpp
+	<iostream>
+	<sys/utsname.h>
+	<sys/sysinfo.h>
+	<string.h>
+	<stdio.h>
+	<unistd.h>
+	"GetData.h"
+	"Info.h"
+

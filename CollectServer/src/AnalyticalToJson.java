@@ -12,7 +12,7 @@ public class AnalyticalToJson {
         for (int i = 0; i < json.length(); i++) {
             System.out.println(json.get("NetWorkInfo"));
             try {
-                StoreToDatabase.insert( 10 , json.get("NetWorkInfo").toString());
+            //    StoreToDatabase.insert( 10 , json.get("NetWorkInfo").toString());
             } catch (Exception e) {
                 e.printStackTrace();
             }

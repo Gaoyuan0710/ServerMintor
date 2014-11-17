@@ -1,8 +1,8 @@
 // =====================================================================================
-// 
+//
 //       Filename:  errno.cpp
 //
-//    Description:  
+//    Description:
 //
 //        Version:  1.0
 //        Created:  2014年10月15日 19时53分31秒
@@ -11,7 +11,7 @@
 //
 //         Author:  Gaoyuan, sishuiliunian0710@gmail.com
 //        Company:  Class 1204 of Computer Science and Technology
-// 
+//
 // =====================================================================================
 
 #include <iostream>
@@ -33,5 +33,6 @@ bool mylog(string filename, string err){
 	outfile.write(err.c_str(), (streamsize)err.length());
 
 	outfile.close();
+	return true;
 }
 
