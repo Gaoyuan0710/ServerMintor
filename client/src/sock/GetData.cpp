@@ -158,6 +158,7 @@ string GetData::getCpuRate(){
 	}
 	i = 0;
 	while (i < 5){
+		Info.append("\"CpuRate\":[");
 		if (i == 0 ){
 			Info.append("{\"Cpu Total \":\"");
 			sprintf(tmp, "%.2f", usage[i]);
@@ -175,6 +176,7 @@ string GetData::getCpuRate(){
 		i++;
 	}
 	Info = Info.substr(0, Info.length() - 1);
+	Info.append("]}");
 	fclose(fp);
 	return Info;
 }

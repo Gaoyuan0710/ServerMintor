@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		char temp[256];
 
 	
-		info.append(getData.getInfo(countNum % 5 + 1));
+		info.append(getData.getInfo(countNum % 6 + 1));
 		cout << info << endl; 
 		flag = InfoProtoBuf::packing(info, ClientBaseInfo, &packet);
 
