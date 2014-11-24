@@ -157,22 +157,23 @@ string GetData::getCpuRate(){
 		i++;
 	}
 	i = 0;
+	Info.append("{\"CpuRate\":[");
 	while (i < 5){
-		Info.append("\"CpuRate\":[");
 		if (i == 0 ){
 			Info.append("{\"Cpu Total \":\"");
 			sprintf(tmp, "%.2f", usage[i]);
 			Info.append(tmp);
-			Info.append("%\"}");
+			Info.append("%\"},");
 			i++;
 			continue;
 		}
-		Info.append("{\"Cpu\"");
-		Info.append(":\"");
-		Info += i;
+		Info.append("{\"Cpu");
+		sprintf(tmp, "%d", i);
+		Info.append(tmp);
+		Info.append("\":\"");
 		sprintf(tmp, "%.2f", usage[i]);
 		Info.append(tmp);
-		Info.append("%\"}");
+		Info.append("%\"},");
 		i++;
 	}
 	Info = Info.substr(0, Info.length() - 1);
@@ -188,25 +189,25 @@ string GetData::getMemInfo(){
 
 	flag = sysinfo(&sys);
 	if (flag == 0){
+		Info.append("{\"MemInfo\":[");	
 		Info.append("{\"MemTotal\":\"");
-		
 		sprintf(tmp, "%ld", (long int)sys.totalram / (1024 * 1024));
 		Info.append(tmp);
 //		Info = Info.substr(0, Info.length() - 1);
-		Info.append("\"}");
+		Info.append("\"},");
 
 		Info.append("{\"MemFree\":\"");
 		sprintf(tmp, "%ld", (long int)sys.freeram / (1024 * 1024));
 		Info.append(tmp);
 //		Info = Info.substr(0, Info.length() - 1);
-		Info.append("\"}");
+		Info.append("\"},");
 
 
 		Info.append("{\"SwapTotal\":\"");
 		sprintf(tmp, "%ld", (long int)sys.totalswap / (1024 * 1024));
 		Info.append(tmp);
 //		Info = Info.substr(0, Info.length() - 1);
-		Info.append("\"}");
+		Info.append("\"},");
 
 
 		Info.append("{\"SwapFree\":\"");
@@ -214,6 +215,7 @@ string GetData::getMemInfo(){
 		Info.append(tmp);
 //		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"}");
+		Info.append("]}");
 
 	}
 	else{
