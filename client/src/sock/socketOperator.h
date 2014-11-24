@@ -41,6 +41,7 @@ class sockOperator{
 		bool sendInfo(char *info, int len);
 		bool setAddrPort(string dest, string port);
 		bool connectServer();
+		bool connectLoop();
 	private:
 		struct sockaddr_in destAddress;
 		int sockfd;

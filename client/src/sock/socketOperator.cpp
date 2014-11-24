@@ -17,6 +17,7 @@
 #include <iostream>
 #include <strings.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "socketOperator.h"
 #include "ServerInfo.pb.h"
@@ -40,7 +41,7 @@ bool sockOperator::connectServer(){
 	if (sockfd < 0){
 		mylog("errlog.txt", "Socket create err\n");
 
-		exit (-1);
+		return false;
 	}
 	
 	int ret = connect(sockfd, (struct sockaddr *) &destAddress, 
@@ -50,7 +51,7 @@ bool sockOperator::connectServer(){
 		perror("connect error");
 		mylog("errlog.txt", "Connect err\n");
 
-		exit (-1);
+		return false;
 	}
 
 	return true;
@@ -68,4 +69,17 @@ bool sockOperator::sendInfo(char *info, int len){
 
 	return true;
 }
+bool sockOperator::connectLoop(){
+	bool flag = true;
 
+	while (1){
+		flag = connectServer();
+
+		if (flag == true){
+			break;
+		}
+
+		sleep(10);
+	}
+	return true;
+}

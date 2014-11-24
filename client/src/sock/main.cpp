@@ -28,12 +28,13 @@
 using std::cout;
 using std::endl;
 
+
 int main(int argc, char *argv[])
 {
 	string info = "";
 	sockOperator sockop;
 	sockop.setAddrPort("127.0.0.1", "8089");
-	sockop.connectServer();
+	sockop.connectLoop();
 	int countNum = 0;
 	
 	while (1){
