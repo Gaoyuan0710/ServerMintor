@@ -35,7 +35,7 @@ string GetData::getInfo(int type){
 	switch(type) {
 		case Notype:
 			 return getError();
-		case ClientListInfo:
+		case ClientBaseInfo:
 			 return getClientInfo();
 		case CpuInfo:
 			 return getCpuInfo();
@@ -45,6 +45,8 @@ string GetData::getInfo(int type){
 			 return getMemInfo();
 		case NetWorkInfo:
 			 return getNetWorkStatus();
+		case DiskIO:
+			 return getDiskIO();
 	}
 	return getError();
 }
@@ -61,7 +63,7 @@ string GetData::getClientInfo(){
 	pp = popen("uname -a", "r");
 
 	if (fgets(buffer, sizeof(buffer), pp) != NULL){
-		Info.append("{\"BaseInfo\":\"");
+		Info.append("{\"ClientBaseInfo\":\"");
 		Info.append(buffer);
 		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"}");
@@ -84,6 +86,7 @@ string GetData::getCpuInfo(){
 	if (fgets(buffer, sizeof(buffer), pp) != NULL){
 		Info.append("{\"CpuInfo\":\"");
 		Info.append(buffer);
+		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"}");
 
 		return Info;
@@ -91,6 +94,27 @@ string GetData::getCpuInfo(){
 
 	Info.append("{\"Error\":\"No Such Client\"}");
 	return Info;
+}
+string GetData::getDiskIO(){
+	FILE *pp;
+	string Info = "";
+	char buffer[128];
+
+	pp = popen("vmstat |awk '{print $9,$10}'", "r");
+
+	if(fgets(buffer, sizeof(buffer), pp) != NULL){
+		fgets(buffer, sizeof(buffer), pp);
+		fgets(buffer, sizeof(buffer), pp); 
+		
+		Info.append("{\"IO Info\":\"");
+		Info.append(buffer);
+		Info = Info.substr(0, Info.length() - 1);
+		Info.append("\"}");
+
+		pclose(pp);
+		return Info;
+	}
+	
 }
 string GetData::getCpuRate(){
 	FILE *fp;
@@ -150,6 +174,7 @@ string GetData::getCpuRate(){
 		Info.append("%\"}");
 		i++;
 	}
+	Info = Info.substr(0, Info.length() - 1);
 	fclose(fp);
 	return Info;
 }
@@ -162,25 +187,30 @@ string GetData::getMemInfo(){
 	flag = sysinfo(&sys);
 	if (flag == 0){
 		Info.append("{\"MemTotal\":\"");
-		sprintf(tmp, "%d", (int)sys.totalram / (1024 * 1024));
+		
+		sprintf(tmp, "%ld", (long int)sys.totalram / (1024 * 1024));
 		Info.append(tmp);
+//		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"}");
 
 		Info.append("{\"MemFree\":\"");
-		sprintf(tmp, "%d", (int)sys.freeram / (1024 * 1024));
+		sprintf(tmp, "%ld", (long int)sys.freeram / (1024 * 1024));
 		Info.append(tmp);
+//		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"}");
 
 
 		Info.append("{\"SwapTotal\":\"");
-		sprintf(tmp, "%d", (int)sys.totalswap / (1024 * 1024));
+		sprintf(tmp, "%ld", (long int)sys.totalswap / (1024 * 1024));
 		Info.append(tmp);
+//		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"}");
 
 
 		Info.append("{\"SwapFree\":\"");
-		sprintf(tmp, "%d", (int)sys.freeswap / (1024 * 1024));
+		sprintf(tmp, "%ld", (long int)sys.freeswap / (1024 * 1024));
 		Info.append(tmp);
+//		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"}");
 
 	}
@@ -252,6 +282,7 @@ string GetData::getNetWorkStatus(){
 		i++;
 	}
 	Info = Info.substr(0, Info.find_last_of(","));
+//	Info = Info.substr(0, Info.length() - 1);
 	Info.append("]}");
 	reader2.close();
 

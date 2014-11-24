@@ -31,42 +31,23 @@ using std::endl;
 int main(int argc, char *argv[])
 {
 	string info = "";
-	sockOperator sockop;
-	sockop.setAddrPort("127.0.0.1", "8089");
-	sockop.connectServer();
-	int countNum = 0;
+	int countNum = 6;
 	
 	while (1){
 		bool flag;
 		struct mypacket packet;
-		ServerInfo::InfoPackage senddata;
 		GetData getData;
 		char temp[256];
 
 	
-		info.append(getData.getInfo(countNum % 5 + 1));
+		info.append(getData.getInfo(countNum));
 		cout << info << endl; 
-		flag = InfoProtoBuf::packing(info, ClientBaseInfo, &packet);
 
 		cout << "Types: " << packet.infoTypes << endl;
 		cout << "Len: " << packet.infoLen<< endl;
 		cout << "Data: " << packet.infoDate << endl;
 
-		if (flag != true){
-			cout << " Packing error" << endl;
-
-			return -1;
-		}
-		flag = InfoProtoBuf::msgSerialize(&packet, &senddata, temp);
-
-		if (flag != true ){
-			cout << "msSerialize error" << endl;
-
-			return -1;
-		}
-		sockop.sendInfo(temp, senddata.ByteSize());
 		info = "";
-		countNum++;
 		sleep(5);
 	}
 

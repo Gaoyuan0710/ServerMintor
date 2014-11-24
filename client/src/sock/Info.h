@@ -21,12 +21,12 @@ using std::string;
 
 enum InfoType{
 	Notype = 0,
-	ClientListInfo = 1,
+	ClientBaseInfo = 1,
 	CpuInfo = 2,
 	MemInfo = 3,
 	CpuRate = 4,
-	NetWorkInfo = 5
-
+	NetWorkInfo = 5,
+	DiskIO = 6
 };
 struct mypacket{
 	int infoTypes;
