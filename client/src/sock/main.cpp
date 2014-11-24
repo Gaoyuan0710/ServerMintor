@@ -30,44 +30,46 @@ using std::endl;
 
 bool sendConfigureInfo(sockOperator sockop){
 	bool flag;
+	struct mypacket packet;
 	string info = "";
 	ServerInfo::InfoPackage senddata;
 	GetData getData;
 	char temp[1024];
 	int countNum = 1;
 
+	info.append("{\"BaseInfo\":[");
 	while (1){
-		memset(temp, '\0', sizeof(temp));
-
-		struct mypacket packet;
 		info.append(getData.getInfo(countNum));
 		cout << info << endl; 
-		flag = InfoProtoBuf::packing(info, ClientBaseInfo, &packet);
 
-		cout << "Types: " << packet.infoTypes << endl;
-		cout << "Len: " << packet.infoLen<< endl;
-		cout << "Data: " << packet.infoDate << endl;
-
-		if (flag != true){
-			cout << " Packing error" << endl;
-		
-			return false;
-		}
-		flag = InfoProtoBuf::msgSerialize(&packet, &senddata, temp);
-
-		if (flag != true ){
-			cout << "msSerialize error" << endl;
-			
-			return false;
-		}
-		sockop.sendInfo(temp, senddata.ByteSize());
-		info = "";
-		if (countNum != 1){
+		if (countNum == 2){
 			break;
 		}
+		info.append(",");
 		countNum++;
 	}
+	info.append("]}");
+	flag = InfoProtoBuf::packing(info, ClientBaseInfo, &packet);
+	if (flag != true){
+		cout << " Packing error" << endl;
+		
+		return false;
+	}
+	cout << "Types: " << packet.infoTypes << endl;
+	cout << "Len: " << packet.infoLen<< endl;
+	cout << "Data: " << packet.infoDate << endl;
 
+	flag = InfoProtoBuf::msgSerialize(&packet, &senddata, temp);
+	
+	if (flag != true ){
+		cout << "msSerialize error" << endl;
+		
+		return false;
+	}
+
+
+	sockop.sendInfo(temp, senddata.ByteSize());
+	
 	return true;
 }
 
