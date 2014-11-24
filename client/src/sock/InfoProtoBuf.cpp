@@ -22,7 +22,7 @@
 
 bool InfoProtoBuf::packing(string info, int type, struct mypacket *infoPacket){
 	infoPacket->infoTypes = type;
-	infoPacket->infoDate.append(info);
+	infoPacket->infoDate.append(info.c_str());
 	infoPacket->infoLen = info.size();
 
 	return true;

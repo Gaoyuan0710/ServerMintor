@@ -67,6 +67,7 @@ bool sockOperator::sendInfo(char *info, int len){
 		return false;
 	}
 
+
 	return true;
 }
 bool sockOperator::connectLoop(){
