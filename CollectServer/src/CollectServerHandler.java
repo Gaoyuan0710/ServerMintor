@@ -11,6 +11,7 @@ public class CollectServerHandler extends ChannelHandlerAdapter{
     public void channelRead(ChannelHandlerContext ctx,  Object msgdata) throws Exception {
         MyPackage.InfoPackage  data = (MyPackage.InfoPackage)msgdata;
 
+
         System.out.println(data.getInfoTypes());
         System.out.println(InfoType.getInfoType(data.getInfoTypes()));
         System.out.println(data.getInfoLen());

@@ -21,7 +21,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("decoder", new HttpRequestDecoder());
         pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("deflater", new HttpContentCompressor());
-        pipeline.addLast("handler", (io.netty.channel.ChannelHandler) new HttpRequestHandler());
+        pipeline.addLast("handler", new HttpRequestHandler());
 
         System.out.println("Initializer OK");
     }

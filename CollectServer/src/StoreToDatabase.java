@@ -19,7 +19,6 @@ public class StoreToDatabase {
             Class.forName(driver);
             connectionStatus = DriverManager.getConnection(url, user, passwd);
 
-
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException e) {

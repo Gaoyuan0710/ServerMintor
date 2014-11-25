@@ -1,12 +1,10 @@
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.local.LocalChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.protobuf.ProtobufDecoder;
 
 
-import com.mypackage.MyPackage;
 
 /**
  * Created by gaoyuan on 14-10-27.
@@ -14,23 +12,26 @@ import com.mypackage.MyPackage;
 public final  class CollectServer {
     static final int PORT = Integer.parseInt(System.getProperty("port", "8089"));
 
+
     public static void CollectStart(){
-        EventLoopGroup bossGroup = new NioEventLoopGroup(2);
+        EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
+            ServerBootstrap Collect = new ServerBootstrap();
+            Collect.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
-                            ChannelPipeline p = ch.pipeline();
-                            p.addLast("protobufDecoder", new ProtobufDecoder(MyPackage.InfoPackage.getDefaultInstance()));
-                            p.addLast(new CollectServerHandler());
-                        }
-                    });
-            ChannelFuture f = b.bind(PORT).sync();
+                    .childHandler(new CollectServerInitializer());
+
+            ServerBootstrap webServer = new ServerBootstrap();
+            webServer.group(bossGroup, workerGroup)
+                    .channel(NioServerSocketChannel.class)
+                    .childHandler(new HttpServerInitializer());
+
+
+            ChannelFuture f = Collect.bind(PORT).sync();
+            Channel ch = webServer.bind(8080).sync().channel();
+            ch.closeFuture().sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
