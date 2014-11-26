@@ -8,12 +8,12 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 /**
  * Created by gaoyuan on 14-11-17.
  */
-public class CollectServerInitializer extends ChannelInitializer<SocketChannel>{
+public class CollectServerInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
-        //ChannelPipeline p = ch.pipeline();
-        //p.addLast("protobufDecoder", new ProtobufDecoder(MyPackage.InfoPackage.getDefaultInstance()));
-        //p.addLast(new CollectServerHandler());
-       // p.addLast("handler", new HttpRequestHandler());
+        ChannelPipeline p = ch.pipeline();
+        p.addLast("protobufDecoder", new ProtobufDecoder(MyPackage.InfoPackage.getDefaultInstance()));
+        p.addLast(new CollectServerHandler());
+        //p.addLast("handler", new HttpRequestHandler());
     }
 }

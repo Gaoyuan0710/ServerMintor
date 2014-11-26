@@ -5,17 +5,19 @@ import java.util.Map;
  * Created by gaoyuan on 14-11-15.
  */
 public class InfoType {
-    private static Map<Integer, String> InfoTypeMap = new HashMap<Integer, String>();
+    private static Map<Integer, String> ClientListMap = new HashMap<Integer, String>();
+
     static {
-        InfoTypeMap.put(0, "Notype");
-        InfoTypeMap.put(1, "ClientBaseInfo");
-        InfoTypeMap.put(2, "CpuInfo");
-        InfoTypeMap.put(3, "MemInfo");
-        InfoTypeMap.put(4, "CpuRate");
-        InfoTypeMap.put(5, "NetWorkInfo");
-        InfoTypeMap.put(6, "DiskIOInfo");
+        ClientListMap.put(0, "Notype");
+        ClientListMap.put(1, "No.1");
+        ClientListMap.put(2, "No.2");
+        ClientListMap.put(3, "No.3");
+        ClientListMap.put(4, "No.4");
+        ClientListMap.put(5, "No.5");
+        ClientListMap.put(6, "No.6");
     }
-    public static String getInfoType(int type){
-        return InfoTypeMap.get(type);
+
+    public static String getInfoType(int type) {
+        return ClientListMap.get(type);
     }
 }

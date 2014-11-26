@@ -5,15 +5,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 
-
 /**
  * Created by gaoyuan on 14-10-27.
  */
-public final  class CollectServer {
+public final class CollectServer {
     static final int PORT = Integer.parseInt(System.getProperty("port", "8089"));
 
 
-    public static void CollectStart(){
+    public static void CollectStart() {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -40,6 +39,7 @@ public final  class CollectServer {
             workerGroup.shutdownGracefully();
         }
     }
+
     public static void main(String[] args) {
         CollectStart();
     }

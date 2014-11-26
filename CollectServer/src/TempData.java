@@ -5,17 +5,22 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class TempData {
     private static TempData data = new TempData();
-    public static TempData getInstance(){
+
+    public static TempData getInstance() {
         return data;
     }
+
     private ConcurrentHashMap<String, String> demoMap;
-    private TempData (){
+
+    private TempData() {
         demoMap = new ConcurrentHashMap<String, String>();
     }
-    public void addKeyValue(String key, String value){
+
+    public void addKeyValue(String key, String value) {
         demoMap.put(key, value);
     }
-    public String getValue(String key){
+
+    public String getValue(String key) {
         return demoMap.get(key);
     }
 }

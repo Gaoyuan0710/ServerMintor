@@ -7,9 +7,9 @@ import org.json.JSONException;
 /**
  * Created by gaoyuan on 14-10-27.
  */
-public class CollectServerHandler extends ChannelHandlerAdapter{
-    public void channelRead(ChannelHandlerContext ctx,  Object msgdata) throws Exception {
-        MyPackage.InfoPackage  data = (MyPackage.InfoPackage)msgdata;
+public class CollectServerHandler extends ChannelHandlerAdapter {
+    public void channelRead(ChannelHandlerContext ctx, Object msgdata) throws Exception {
+        MyPackage.InfoPackage data = (MyPackage.InfoPackage) msgdata;
 
 
         System.out.println(data.getInfoTypes());
@@ -17,7 +17,7 @@ public class CollectServerHandler extends ChannelHandlerAdapter{
         System.out.println(data.getInfoLen());
 
         try {
-            AnalyticalToJson.StringAnalyticalToJson(data.getInfoData());
+            AnalyticalToJson.StringAnalyticalToJson(data.getInfoTypes(), data.getInfoData());
         } catch (Exception e) {
             e.printStackTrace();
         }

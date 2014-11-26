@@ -4,7 +4,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+
 import javax.net.ssl.SSLEngine;
+
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 import javax.net.ssl.SSLEngine;
@@ -15,7 +17,7 @@ import javax.net.ssl.SSLEngine;
 
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
     @Override
-    public void initChannel (SocketChannel ch) throws Exception {
+    public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline pipeline = ch.pipeline();
 
         pipeline.addLast("decoder", new HttpRequestDecoder());
