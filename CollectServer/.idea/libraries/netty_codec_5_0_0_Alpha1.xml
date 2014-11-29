@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="netty-codec-5.0.0.Alpha1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Downloads/netty-5.0.0.Alpha1/jar/netty-codec-5.0.0.Alpha1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

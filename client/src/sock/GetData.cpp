@@ -106,7 +106,7 @@ string GetData::getDiskIO(){
 		fgets(buffer, sizeof(buffer), pp);
 		fgets(buffer, sizeof(buffer), pp); 
 		
-		Info.append("{\"IO Info\":\"");
+		Info.append("{\"IOInfo\":\"");
 		Info.append(buffer);
 		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"}");
