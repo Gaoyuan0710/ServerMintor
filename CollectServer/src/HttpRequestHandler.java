@@ -74,17 +74,22 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
                     return;
                 }
                 List<String> q = parame.get("get");
-                String data = "";
+                String data = "[";
 
                 for (String sourceRequest : q) {
                     System.out.println(sourceRequest);
+                    int clientID = Integer.valueOf(sourceRequest.substring(0, 1));
+                    String infoType = sourceRequest.substring(1, sourceRequest.length());
 
                     if (sourceRequest != null && !sourceRequest.equals("")) {
                         //    String data = "<html><body>ÄãºÃ£¬GET</body><html>";
 
-                        data += DealGetRequest.getInfo(sourceRequest);
+                        data += DealGetRequest.getInfo(clientID, infoType);
+                        data += ",";
                     }
                 }
+                data = data.substring(0, data.length() - 1);
+                data += "]";
                 System.out.println(data);
                 ByteBuf buf = copiedBuffer(data, CharsetUtil.UTF_8);
                 FullHttpResponse response = new DefaultFullHttpResponse(

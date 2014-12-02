@@ -25,25 +25,75 @@ public class StoreToDatabase {
         return connectionStatus;
     }
 
-    public static String find(String info, String table) throws SQLException {
+    public static String find(String info, String table, int clientID) throws SQLException {
         String resultInfo = "";
 
         String sql = "select ";
         sql += info;
         sql += " from ";
         sql += table;
-        sql += " order by CurrentTime desc limit 0, 5";
+
+        if (!(clientID == 0)) {
+            if (!table.equals("clientList")) {
+                sql += " where clientID = ";
+
+
+            } else {
+                sql += " where ID = ";
+
+            }
+            sql += clientID;
+        }
+        if (!table.equals("clientList")) {
+            sql += " order by CurrentTime desc limit 0, 5";
+        }
+
 
         connection = getConnection();
         Statement dbStatue = connection.createStatement();
 
     //    dbStatue.execute(sql);
 
+        System.out.println(sql);
         ResultSet resultSet = dbStatue.executeQuery(sql);
 
+        resultInfo = "{\"result\":";
+        boolean flag = false;
+        boolean arrayFlag = false;
+        boolean beginFlag = true;
+
         while (resultSet.next()){
+            if (!resultSet.getString(info).startsWith("[") && beginFlag == true){
+                resultInfo += "[[\"";
+                flag = true;
+                beginFlag = false;
+            }
+            else if (resultSet.getString(info).startsWith("[") && beginFlag == true){
+                resultInfo += "[";
+                arrayFlag = true;
+                beginFlag = false;
+            }
             resultInfo += resultSet.getString(info);
+
+            if (!arrayFlag){
+                resultInfo += "\"],[\"";
+            }
+            else {
+                resultInfo += ",";
+            }
+
         }
+
+        if (flag){
+            resultInfo = resultInfo.substring(0, resultInfo.length() - 4);
+            resultInfo += "]]";
+        }
+        if (arrayFlag){
+
+            resultInfo = resultInfo.substring(0, resultInfo.length() - 1);
+            resultInfo += "]";
+        }
+        resultInfo += "}";
 
         connection.close();
         return resultInfo;
