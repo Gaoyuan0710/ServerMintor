@@ -96,6 +96,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
                         HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
                 response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
                 response.headers().set(CONTENT_LENGTH, buf.readableBytes());
+                response.headers().set(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+                response.headers().set(CACHE_CONTROL, "private, must-revalidate");
                 ctx.channel().writeAndFlush(response);
             } else if (request.getMethod() == HttpMethod.POST)
 
