@@ -59,21 +59,64 @@ string GetData::getClientInfo(){
 	FILE *pp;
 	string Info = "";
 	char buffer [128];
+	int flag = 0;
+	bool finishFlag = false;
 
-	pp = popen("uname -a", "r");
+	while (!finishFlag){
+		switch (flag){
+			case 0:
+				pp = popen("uname -n", "r");
+				if (fgets(buffer, sizeof(buffer), pp) != NULL){
+					Info.append("{\"serverName\":\"");
+					Info.append(buffer);
+					Info = Info.substr(0, Info.length() - 1);
+					Info.append("\",");
+				}
+				pclose(pp);
+				flag = 1;
+			case 1:
+				pp = popen("uname -o", "r");
+				if (fgets(buffer, sizeof(buffer), pp) != NULL){
+					Info.append("\"serverOS\":\"");
+					Info.append(buffer);
+		 			Info = Info.substr(0, Info.length() - 1);
+					Info.append("\",");
+				}
+				pclose(pp);
+				flag = 2;
+			case 2:
+				pp = popen("uname -r", "r");
+				if (fgets(buffer, sizeof(buffer), pp) != NULL){
+					Info.append("\"serverKernel\":\"");
+					Info.append(buffer);
+					Info = Info.substr(0, Info.length() - 1);
+					Info.append("\",");
+				}
+				pclose(pp);
+				
+				flag = 3;
+			case 3:
+				pp = popen("date", "r");
+				
+				if (fgets(buffer, sizeof(buffer), pp) != NULL){
+					Info.append("\"serverTime\":\"");
+					Info.append(buffer);
+					Info = Info.substr(0, Info.length() - 1);
+					Info.append("\"}");	
+				}
+				pclose(pp);
 
-	if (fgets(buffer, sizeof(buffer), pp) != NULL){
-		Info.append("{\"ClientBaseInfo\":\"");
-		Info.append(buffer);
-		Info = Info.substr(0, Info.length() - 1);
-		Info.append("\"}");
-
-		return Info;
+				flag = 4;
+			default:
+				finishFlag = true;
+				break;
+		}
 	}
 
-	Info.append("{\"Error\":\"No Such Client\"}");
-
-	return Info;
+	if (flag == 4){
+		return Info;
+	}
+	return ("{\"Error\":\"No Such Client\"}");
 }
 
 string GetData::getCpuInfo(){
