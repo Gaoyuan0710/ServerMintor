@@ -198,6 +198,7 @@ string GetData::getMemInfo(){
 
 		Info.append("{\"MemFree\":\"");
 		sprintf(tmp, "%ld", (long int)sys.freeram / (1024 * 1024));
+	
 		Info.append(tmp);
 //		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"},");
