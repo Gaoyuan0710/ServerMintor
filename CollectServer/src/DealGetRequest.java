@@ -10,22 +10,22 @@ import java.sql.SQLException;
 
 public class DealGetRequest {
     public static String getInfo(int clientID, String order) throws SQLException {
-        if (order.equals("BaseInfo")){
+        if (order.equals("getBaseInfo")){
             return getClientBaseInfo(clientID);
         }
-        else if(order.equals("CpuInfo")){
+        else if(order.equals("getCpuInfo")){
             return getCpuInfo(clientID);
         }
-        else if(order.equals("MemInfo")){
+        else if(order.equals("getMemInfo")){
             return getMemInfo(clientID);
         }
-        else if (order.equals("CpuRate")){
+        else if (order.equals("getCpuRate")){
             return getCpuRate(clientID);
         }
-        else if (order.equals("NetWorkInfo")){
+        else if (order.equals("getNetWorkInfo")){
             return getNetWorkInfo(clientID);
         }
-        else if(order.equals("DiskIO")){
+        else if(order.equals("getDiskIO")){
             return getDiskIO(clientID);
         }
         else{
