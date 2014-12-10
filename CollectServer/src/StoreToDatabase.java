@@ -136,4 +136,20 @@ public class StoreToDatabase {
         //  String sql = "UPDATE clientList SET `Name`='yuan', `CpuInfo`='is' WHERE `ID`='1'";
 
     }
+    public static String findBaseInfo(int id) throws SQLException {
+        String sql = "select Name from clientList where ID = ";
+        sql += id;
+        String data = "";
+
+        connection = getConnection();
+        Statement dbStatue = connection.createStatement();
+
+        ResultSet resultSet = dbStatue.executeQuery(sql);
+        while (resultSet.next()) {
+            data = resultSet.getString("Name");
+        }
+
+        return data;
+
+    }
 }

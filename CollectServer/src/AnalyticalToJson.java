@@ -36,7 +36,7 @@ public class AnalyticalToJson {
             TempData tempData = TempData.getInstance();
             tempData.addKeyValue(infoData, jsonObject.get(infoData).toString());
             sqlData += jsonObject.get(infoData).toString() + "','";
-            System.out.println("OVer");
+            System.out.println("Over");
 
         }
 

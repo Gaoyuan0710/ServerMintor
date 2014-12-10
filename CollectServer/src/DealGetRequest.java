@@ -33,7 +33,7 @@ public class DealGetRequest {
         }
     }
     public static String getClientBaseInfo(int clientID) throws SQLException {
-        return StoreToDatabase.find("Name", "clientList", clientID);
+        return StoreToDatabase.findBaseInfo(clientID);
     }
     public static String getCpuInfo(int clientID) throws SQLException {
         return StoreToDatabase.find("CpuInfo", "clientList", clientID);
