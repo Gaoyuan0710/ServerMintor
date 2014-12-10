@@ -57,7 +57,7 @@ string GetData::getError(){
 }
 string GetData::getClientInfo(){
 	FILE *pp;
-	string Info = "";
+	string Info = "{\"ClientBaseInfo\":";
 	char buffer [128];
 	int flag = 0;
 	bool finishFlag = false;
@@ -102,7 +102,7 @@ string GetData::getClientInfo(){
 					Info.append("\"serverTime\":\"");
 					Info.append(buffer);
 					Info = Info.substr(0, Info.length() - 1);
-					Info.append("\"}");	
+					Info.append("\"}}");	
 				}
 				pclose(pp);
 
