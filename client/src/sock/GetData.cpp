@@ -96,7 +96,7 @@ string GetData::getClientInfo(){
 				
 				flag = 3;
 			case 3:
-				pp = popen("date", "r");
+				pp = popen("date -d next-day '+%F %T'", "r");
 				
 				if (fgets(buffer, sizeof(buffer), pp) != NULL){
 					Info.append("\"serverTime\":\"");
@@ -203,7 +203,7 @@ string GetData::getCpuRate(){
 	Info.append("{\"CpuRate\":[");
 	while (i < 5){
 		if (i == 0 ){
-			Info.append("{\"Cpu Total \":\"");
+			Info.append("{\"CpuTotal\":\"");
 			sprintf(tmp, "%.2f", usage[i]);
 			Info.append(tmp);
 			Info.append("%\"},");

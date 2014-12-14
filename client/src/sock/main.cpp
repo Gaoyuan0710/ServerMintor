@@ -49,7 +49,8 @@ bool sendConfigureInfo(sockOperator sockop){
 		countNum++;
 	}
 	info.append("]}");
-	flag = InfoProtoBuf::packing(info, ClientBaseInfo, &packet);
+	flag = InfoProtoBuf::packing(info, CpuInfo, &packet);
+//	flag = InfoProtoBuf::packing(info, ClientBaseInfo, &packet);
 	if (flag != true){
 		cout << " Packing error" << endl;
 		
@@ -94,7 +95,8 @@ bool sendMonitor(sockOperator sockop){
 		countNum++;
 	}
 	info.append("]}");
-	flag = InfoProtoBuf::packing(info, ClientBaseInfo, &packet);
+	flag = InfoProtoBuf::packing(info, CpuInfo, &packet);
+	//flag = InfoProtoBuf::packing(info, ClientBaseInfo, &packet);
 	if (flag != true){
 		cout << " Packing error" << endl;
 		
@@ -133,10 +135,8 @@ int main(int argc, char *argv[])
 	sendConfigureInfo(sockop);
 	while (1){
 		sendMonitor(sockop);
-
-		sleep(10);
+		sleep(250);
 	}
-
 	return 1;
 }
 
