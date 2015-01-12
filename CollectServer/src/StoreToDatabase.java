@@ -137,19 +137,27 @@ public class StoreToDatabase {
 
     }
     public static String findBaseInfo(int id) throws SQLException {
-        String sql = "select Name from clientList where ID = ";
-        sql += id;
+        String sql = "";
         String data = "";
+
+        if (id != 0) {
+            sql = "select Name from clientList where ID = ";
+            sql += id;
+        }
+        else {
+            sql = "select Name from clientList";
+        }
 
         connection = getConnection();
         Statement dbStatue = connection.createStatement();
 
         ResultSet resultSet = dbStatue.executeQuery(sql);
         while (resultSet.next()) {
-            data = resultSet.getString("Name");
+            data += resultSet.getString("Name");
+            data += ",";
         }
-
+        data = data.substring(0, data.length() - 1);
         return data;
-
     }
+
 }
