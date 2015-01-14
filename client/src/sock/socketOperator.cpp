@@ -23,11 +23,11 @@
 #include "ServerInfo.pb.h"
 #include "../log/log.cpp"
 
-bool sockOperator::setAddrPort(string dest, string port){	
+bool sockOperator::setAddrPort(){	
 	bzero(&destAddress, sizeof(destAddress));
 	this->destAddress.sin_family = AF_INET;
-	this->destAddress.sin_port = htons(atoi(port.c_str()));
-	if (inet_pton(AF_INET, dest.c_str(), &destAddress.sin_addr) <= 0){
+	this->destAddress.sin_port = htons(atoi(this->port.c_str()));
+	if (inet_pton(AF_INET, this->dest.c_str(), &destAddress.sin_addr) <= 0){
 		printf("inet_pton error");
 	}
 
@@ -84,25 +84,125 @@ bool sockOperator::connectLoop(){
 	}
 	return true;
 }
+
+void sockOperator::socketMain(){
+	this->setAddrPort();
+	this->connectLoop();
+	this->dealWithEpoll();
+}
 void sockOperator::dealWithEpoll(){
 	struct epoll_event event[this->kEpollEvent];
 	int epollFd;
+	char dataBuf[1024];
 
 	epollFd = epoll_create(kMaxFdSize);
+	
 	addEvent(epollFd, sockfd, EPOLLIN);
+	addEvent(epollFd, pipeFd, EPOLLIN);
 
 	for (;;){
-		int ret = epoll_wait(epollFd, event, kEpollEvent);
+		int ret = epoll_wait(epollFd, event, kEpollEvent, -1);
 
 		for (int i = 0; i < ret ; i++){
 			int fd = event[i].data.fd;
 
-			if (event[i].data & EPOLLIN && fd == pipeFd[]){
-				dealRead();
+			if ((event[i].events & EPOLLIN) && (fd == pipeFd)){
+				dealPipeRead(dataBuf);
 			}
-			else (event[i].data & EPOLLOUT){
-				dealWrite();
+			else if (event[i].events & EPOLLIN && fd == sockfd){
+				dealSockFd();
+			}
+			else if (event[i].events & EPOLLOUT){
+				dealWrite(dataBuf);
 			}
 		}
 	}
+}
+
+bool sockOperator::dealSockFd(){
+	int readLen;
+	char buf[1024];
+	
+	readLen = read(sockfd, buf, 1024);
+	if (readLen >= 0){
+		cout << "Recv Message From Server\n" << buf;
+	}
+	else {
+		perror("read from server error");
+
+		exit(1);
+	}
+
+	return true;
+}
+bool sockOperator::dealPipeRead(char *buf){
+	int readLen;
+
+	readLen = read(pipeFd, buf, 1024);
+
+	if (-1 == readLen){
+		perror("read error");
+		close(pipeFd);
+		deleteEvent(epollFd, pipeFd, EPOLLIN);
+		exit (1);
+	}
+	else if (readLen == 0){
+		fprintf(stderr, "close collect function");
+		close(pipeFd);
+		deleteEvent(epollFd, pipeFd, EPOLLIN);
+	}
+	else{
+		cout << "Recv Message From CollectFunction\n" << buf;
+		modifyEvent(epollFd, sockfd, EPOLLOUT);
+	}
+
+	return true;
+}
+
+bool sockOperator::dealWrite(char *buf){
+	int writeLen;
+
+	writeLen = write(sockfd, buf, strlen(buf));
+
+	if (writeLen == -1){
+		perror("write error");
+		close(sockfd);
+		deleteEvent(epollFd, sockfd, EPOLLOUT);
+	}
+	else{
+		modifyEvent(epollFd, sockfd, EPOLLIN);
+	}
+	memset(buf, 0, sizeof(buf));	
+} 
+
+bool sockOperator::deleteEvent(int epollFd, int fd, int state){
+	struct epoll_event tmp;
+
+	tmp.events = state;
+	tmp.data.fd = fd;
+
+	epoll_ctl(epollFd, EPOLL_CTL_DEL, fd, &tmp);
+
+	return true;
+}
+bool sockOperator::modifyEvent(int epollFd, int fd, int state){
+	struct epoll_event tmp;
+
+	tmp.events = state;
+	tmp.data.fd = fd;
+
+	epoll_ctl(epollFd, EPOLL_CTL_MOD, fd, &tmp);
+
+	return true;
+}
+
+bool sockOperator::addEvent(int epollFd, int fd, int state){
+	struct epoll_event tmp;
+
+	tmp.events = state;
+	tmp.data.fd = fd;
+
+	epoll_ctl(epollFd, EPOLL_CTL_ADD,fd, &tmp);
+
+	return true;
 }
