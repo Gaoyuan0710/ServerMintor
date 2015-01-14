@@ -84,3 +84,25 @@ bool sockOperator::connectLoop(){
 	}
 	return true;
 }
+void sockOperator::dealWithEpoll(){
+	struct epoll_event event[this->kEpollEvent];
+	int epollFd;
+
+	epollFd = epoll_create(kMaxFdSize);
+	addEvent(epollFd, sockfd, EPOLLIN);
+
+	for (;;){
+		int ret = epoll_wait(epollFd, event, kEpollEvent);
+
+		for (int i = 0; i < ret ; i++){
+			int fd = event[i].data.fd;
+
+			if (event[i].data & EPOLLIN && fd == pipeFd[]){
+				dealRead();
+			}
+			else (event[i].data & EPOLLOUT){
+				dealWrite();
+			}
+		}
+	}
+}

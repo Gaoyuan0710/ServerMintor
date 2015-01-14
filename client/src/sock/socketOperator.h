@@ -22,6 +22,9 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <string>
+#include <arpa/inet.h>
+#include <netinet.h>
+#include <sys/epoll.h>
 
 #include "ServerInfo.pb.h"
 
@@ -32,7 +35,7 @@ using std::endl;
 using std::string;
 
 #define BUFLINE 1024
-
+#
 
 
 class sockOperator{
@@ -42,9 +45,19 @@ class sockOperator{
 		bool setAddrPort(string dest, string port);
 		bool connectServer();
 		bool connectLoop();
+		bool addEvent(int epollFd, int fd, int state);
+		bool deleteEvent(int epollFd, int fd, int state);
+		bool modifyEvent(int epollFd, int fd, int state);
+		bool dealRead(int epollFd, int fd, int sockfd, char *buf);
+		bool dealWrite(int epollFd, int fd, int sockfd, char *buf);
+		void dealWithEpoll();
+
 	private:
 		struct sockaddr_in destAddress;
 		int sockfd;
+		static const int kMaxFdSize = 100;
+		static const int kEpollEvent = 100;
+		int pipeFd[2];
 
 
 };
