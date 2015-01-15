@@ -109,7 +109,7 @@ void sockOperator::dealWithEpoll(){
 			if ((event[i].events & EPOLLIN) && (fd == pipeFd)){
 				dealPipeRead(dataBuf);
 			}
-			else if (event[i].events & EPOLLIN && fd == sockfd){
+			else if ((event[i].events & EPOLLIN) && (fd == sockfd)){
 				dealSockFd();
 			}
 			else if (event[i].events & EPOLLOUT){
@@ -152,8 +152,10 @@ bool sockOperator::dealPipeRead(char *buf){
 		deleteEvent(epollFd, pipeFd, EPOLLIN);
 	}
 	else{
-		cout << "Recv Message From CollectFunction\n" << buf;
+		cout << "Recv Message From CollectFunction\n" << buf << endl;
 		modifyEvent(epollFd, sockfd, EPOLLOUT);
+//		dealWrite(buf);
+	//	write(sockfd, buf, readLen);
 	}
 
 	return true;
@@ -162,6 +164,13 @@ bool sockOperator::dealPipeRead(char *buf){
 bool sockOperator::dealWrite(char *buf){
 	int writeLen;
 
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << "ssssssssssssssss" << endl;
 	writeLen = write(sockfd, buf, strlen(buf));
 
 	if (writeLen == -1){
