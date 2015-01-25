@@ -285,7 +285,7 @@ string GetData::getNetWorkStatus(){
 	reader1.seekg(200, ios::beg);
 
 	while (reader1.getline(str, 128)){
-		cout << str << endl;
+//		cout << str << endl;
 		bytesRecv = 0;
 		bytesTrans = 0;
 
@@ -305,7 +305,7 @@ string GetData::getNetWorkStatus(){
 	reader2.seekg(200, ios::beg);
 
 	while (reader2.getline(str, 128)){
-		cout << str << endl;
+	//	cout << str << endl;
 		bytesRecv = 0;
 		bytesTrans = 0;
 
@@ -320,7 +320,7 @@ string GetData::getNetWorkStatus(){
 	char tmp[100];
 	while (i < devName.size()){
 		unsigned long rate = (usefulData2[2 * i] + usefulData2[2 * i + 1] - usefulData1[2 * i] - usefulData1[2 * i + 1])/(1024);
-		cout << devName[i] << " " << rate << endl;
+	//	cout << devName[i] << " " << rate << endl;
 		Info.append("{\"");
 		Info.append(devName[i]);
 		Info.append("\":\"");

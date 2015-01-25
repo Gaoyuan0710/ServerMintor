@@ -53,7 +53,7 @@ bool sockOperator::connectServer(){
 
 		return false;
 	}
-
+	cout << "Connect Successfully" << endl;
 	return true;
 }
 bool sockOperator::sendInfo(char *info, int len){
@@ -92,7 +92,6 @@ void sockOperator::socketMain(){
 }
 void sockOperator::dealWithEpoll(){
 	struct epoll_event event[this->kEpollEvent];
-	int epollFd;
 	char dataBuf[1024];
 
 	epollFd = epoll_create(kMaxFdSize);
@@ -107,12 +106,17 @@ void sockOperator::dealWithEpoll(){
 			int fd = event[i].data.fd;
 
 			if ((event[i].events & EPOLLIN) && (fd == pipeFd)){
+				cout << "pipeFd read" << endl;
 				dealPipeRead(dataBuf);
 			}
-			else if ((event[i].events & EPOLLIN) && (fd == sockfd)){
+			if ((event[i].events & EPOLLIN) && (fd == sockfd)){
+				cout << "sockFd read" << endl;
+			//	dealPipeRead(dataBuf);
 				dealSockFd();
 			}
-			else if (event[i].events & EPOLLOUT){
+			if ((event[i].events & EPOLLOUT) && (fd == sockfd)){
+				cout << "sockFd write" << endl;
+			//	dealPipeRead(dataBuf);
 				dealWrite(dataBuf);
 			}
 		}
@@ -125,7 +129,7 @@ bool sockOperator::dealSockFd(){
 	
 	readLen = read(sockfd, buf, 1024);
 	if (readLen >= 0){
-		cout << "Recv Message From Server\n" << buf;
+		cout << "Recv Message From Server\n" << buf << endl;
 	}
 	else {
 		perror("read from server error");
@@ -152,10 +156,11 @@ bool sockOperator::dealPipeRead(char *buf){
 		deleteEvent(epollFd, pipeFd, EPOLLIN);
 	}
 	else{
-		cout << "Recv Message From CollectFunction\n" << buf << endl;
-		modifyEvent(epollFd, sockfd, EPOLLOUT);
+		cout << "Recv Message From CollectFunction\n" << endl;
+		cout << buf << endl;
+//		modifyEvent(epollFd, sockfd, EPOLLOUT);
 //		dealWrite(buf);
-	//	write(sockfd, buf, readLen);
+		write(sockfd, buf, readLen);
 	}
 
 	return true;
@@ -164,13 +169,6 @@ bool sockOperator::dealPipeRead(char *buf){
 bool sockOperator::dealWrite(char *buf){
 	int writeLen;
 
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << "ssssssssssssssss" << endl;
 	writeLen = write(sockfd, buf, strlen(buf));
 
 	if (writeLen == -1){
@@ -200,7 +198,8 @@ bool sockOperator::modifyEvent(int epollFd, int fd, int state){
 	tmp.events = state;
 	tmp.data.fd = fd;
 
-	epoll_ctl(epollFd, EPOLL_CTL_MOD, fd, &tmp);
+	int flag = epoll_ctl(epollFd, EPOLL_CTL_MOD, fd, &tmp);
+	cout << flag << endl;
 
 	return true;
 }

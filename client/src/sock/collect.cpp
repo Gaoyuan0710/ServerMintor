@@ -36,7 +36,7 @@ bool collectConfigureInfo(int fd){
 	char temp[1024];
 	int countNum = 1;
 
-	info.append("{\"BaseInfo\":");
+	info.append("{\"BaseInfo\":[");
 	while (1){
 		info.append(getData.getInfo(countNum));
 
@@ -55,10 +55,11 @@ bool collectConfigureInfo(int fd){
 
 		return false;
 	}
+/*
 	cout << "Types: " << packet.infoTypes << endl;
 	cout << "Len: " << packet.infoLen << endl;
 	cout << "Data:" << packet.infoDate << endl;
-
+*/	
 	flag = InfoProtoBuf::msgSerialize(&packet, &sendData, temp);
 
 	if (flag != true){
@@ -101,10 +102,11 @@ bool collectMonitor(int fd){
 		return false;
 	}
 	
-	cout << "Types: " << packet.infoTypes << endl;
+/*	cout << "Types: " << packet.infoTypes << endl;
 	cout << "Len: " << packet.infoLen << endl;
 	cout << "Data:" << packet.infoDate << endl;
 
+*/
 	flag = InfoProtoBuf::msgSerialize(&packet, &sendData, temp);
 
 	if (flag != true){
@@ -125,7 +127,7 @@ void collectMain(int fd){
 
 	while (1){
 		collectMonitor(fd);
-		sleep(250);
+		sleep(50);
 	}
 }
 
