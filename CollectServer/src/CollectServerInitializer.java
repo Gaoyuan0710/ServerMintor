@@ -14,6 +14,6 @@ public class CollectServerInitializer extends ChannelInitializer<SocketChannel> 
         ChannelPipeline p = ch.pipeline();
         p.addLast("protobufDecoder", new ProtobufDecoder(MyPackage.InfoPackage.getDefaultInstance()));
         p.addLast(new CollectServerHandler());
-        //p.addLast("handler", new HttpRequestHandler());
+        p.addLast("handler", new HttpRequestHandler());
     }
 }
