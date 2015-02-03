@@ -23,6 +23,14 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netdb.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
 
 #include "GetData.h"
 #include "Info.h"
@@ -47,6 +55,8 @@ string GetData::getInfo(int type){
 			 return getNetWorkStatus();
 		case DiskIO:
 			 return getDiskIO();
+		case IP:
+			 return getIp();
 	}
 	return getError();
 }
@@ -335,5 +345,55 @@ string GetData::getNetWorkStatus(){
 	reader2.close();
 
 	return Info;
+}
+string GetData::getIp(){
+	int tmpFd;
+	int intr;
+	struct ifreq buf[16];
+	struct ifconf ifc;
+
+
+	string Info = "{\"Ip\":\"";
+	
+
+
+
+	tmpFd = socket(AF_INET, SOCK_DGRAM, 0);
+
+	if (tmpFd < 0){
+		return "Wrong Address";
+	}
+
+	ifc.ifc_len = sizeof(buf);
+	ifc.ifc_ifcu.ifcu_buf = (caddr_t) buf;
+
+	if (ioctl(tmpFd, SIOCGIFCONF, (char *)&ifc)){
+		return "Wrong Address";
+	}
+	intr = ifc.ifc_len / sizeof(struct ifreq);
+
+	while (intr-- > 0 && ioctl(tmpFd, SIOCGIFADDR, (char *)&buf[intr]))
+	  ;
+	close(tmpFd);
+
+	string data(inet_ntoa(((struct sockaddr_in *)(&buf[intr].ifr_ifru.ifru_addr))->sin_addr));
+
+	Info += data;
+	Info.append("\"}");
+
+	cout << endl;
+
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+
+	cout << Info << endl;
+	return Info;
+
 }
 
