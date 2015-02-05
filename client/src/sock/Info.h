@@ -23,10 +23,11 @@ enum InfoType{
 	Notype = 0,
 	ClientBaseInfo = 1,
 	CpuInfo = 2,
-	MemInfo = 3,
-	CpuRate = 4,
-	NetWorkInfo = 5,
-	DiskIO = 6
+	IP = 3,
+	MemInfo = 4,
+	CpuRate = 5,
+	NetWorkInfo = 6,
+	DiskIO = 7
 };
 struct mypacket{
 	int infoTypes;
