@@ -28,6 +28,9 @@ public class DealGetRequest {
         else if(order.equals("getDiskIO")){
             return getDiskIO(clientID);
         }
+        else if(order.equals("getIp")){
+            return getIp(clientID);
+        }
         else{
             return "No info";
         }
@@ -49,6 +52,9 @@ public class DealGetRequest {
     }
     public static String getDiskIO(int clientID) throws SQLException{
         return StoreToDatabase.find("IOInfo", "MonitorInformation", clientID);
+    }
+    public static String getIp(int clientID) throws SQLException{
+        return StoreToDatabase.find("Ip", "clientList", clientID);
     }
 }
 

@@ -44,7 +44,7 @@ public class AnalyticalToJson {
         sqlData = sqlData.replaceAll("\"", "\\\"");
         sqlData = sqlData.substring(0, sqlData.length() - 2);
         sqlData += ");";
-        System.out.println(sqlData);
+    //    System.out.println(sqlData);
 
         // System.out.println(json.get("ClientBaseInfo"));
 

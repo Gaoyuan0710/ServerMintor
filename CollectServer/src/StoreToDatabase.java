@@ -103,7 +103,7 @@ public class StoreToDatabase {
     public static void insert(String data) throws Exception {
 
         String sql = "INSERT INTO MonitorInformation (clientID,MemInfo, CpuRate," +
-                "NetWorkInfo,IOInfo,Ip) VALUES ";
+                "NetWorkInfo,IOInfo) VALUES ";
 
 
         connection = getConnection();
