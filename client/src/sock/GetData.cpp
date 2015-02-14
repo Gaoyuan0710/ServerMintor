@@ -23,6 +23,14 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netdb.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+
 
 #include "GetData.h"
 #include "Info.h"
@@ -47,6 +55,8 @@ string GetData::getInfo(int type){
 			 return getNetWorkStatus();
 		case DiskIO:
 			 return getDiskIO();
+		case IP:
+			 return getIp();
 	}
 	return getError();
 }
@@ -57,23 +67,66 @@ string GetData::getError(){
 }
 string GetData::getClientInfo(){
 	FILE *pp;
-	string Info = "";
+	string Info = "{\"ClientBaseInfo\":";
 	char buffer [128];
+	int flag = 0;
+	bool finishFlag = false;
 
-	pp = popen("uname -a", "r");
+	while (!finishFlag){
+		switch (flag){
+			case 0:
+				pp = popen("uname -n", "r");
+				if (fgets(buffer, sizeof(buffer), pp) != NULL){
+					Info.append("{\"serverName\":\"");
+					Info.append(buffer);
+					Info = Info.substr(0, Info.length() - 1);
+					Info.append("\",");
+				}
+				pclose(pp);
+				flag = 1;
+			case 1:
+				pp = popen("uname -o", "r");
+				if (fgets(buffer, sizeof(buffer), pp) != NULL){
+					Info.append("\"serverOS\":\"");
+					Info.append(buffer);
+		 			Info = Info.substr(0, Info.length() - 1);
+					Info.append("\",");
+				}
+				pclose(pp);
+				flag = 2;
+			case 2:
+				pp = popen("uname -r", "r");
+				if (fgets(buffer, sizeof(buffer), pp) != NULL){
+					Info.append("\"serverKernel\":\"");
+					Info.append(buffer);
+					Info = Info.substr(0, Info.length() - 1);
+					Info.append("\",");
+				}
+				pclose(pp);
+				
+				flag = 3;
+			case 3:
+				pp = popen("date -d next-day '+%F %T'", "r");
+				
+				if (fgets(buffer, sizeof(buffer), pp) != NULL){
+					Info.append("\"serverTime\":\"");
+					Info.append(buffer);
+					Info = Info.substr(0, Info.length() - 1);
+					Info.append("\"}}");	
+				}
+				pclose(pp);
 
-	if (fgets(buffer, sizeof(buffer), pp) != NULL){
-		Info.append("{\"ClientBaseInfo\":\"");
-		Info.append(buffer);
-		Info = Info.substr(0, Info.length() - 1);
-		Info.append("\"}");
-
-		return Info;
+				flag = 4;
+			default:
+				finishFlag = true;
+				break;
+		}
 	}
 
-	Info.append("{\"Error\":\"No Such Client\"}");
-
-	return Info;
+	if (flag == 4){
+		return Info;
+	}
+	return ("{\"Error\":\"No Such Client\"}");
 }
 
 string GetData::getCpuInfo(){
@@ -160,7 +213,7 @@ string GetData::getCpuRate(){
 	Info.append("{\"CpuRate\":[");
 	while (i < 5){
 		if (i == 0 ){
-			Info.append("{\"Cpu Total \":\"");
+			Info.append("{\"CpuTotal\":\"");
 			sprintf(tmp, "%.2f", usage[i]);
 			Info.append(tmp);
 			Info.append("%\"},");
@@ -198,6 +251,7 @@ string GetData::getMemInfo(){
 
 		Info.append("{\"MemFree\":\"");
 		sprintf(tmp, "%ld", (long int)sys.freeram / (1024 * 1024));
+	
 		Info.append(tmp);
 //		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"},");
@@ -241,7 +295,7 @@ string GetData::getNetWorkStatus(){
 	reader1.seekg(200, ios::beg);
 
 	while (reader1.getline(str, 128)){
-		cout << str << endl;
+//		cout << str << endl;
 		bytesRecv = 0;
 		bytesTrans = 0;
 
@@ -261,7 +315,7 @@ string GetData::getNetWorkStatus(){
 	reader2.seekg(200, ios::beg);
 
 	while (reader2.getline(str, 128)){
-		cout << str << endl;
+	//	cout << str << endl;
 		bytesRecv = 0;
 		bytesTrans = 0;
 
@@ -276,7 +330,7 @@ string GetData::getNetWorkStatus(){
 	char tmp[100];
 	while (i < devName.size()){
 		unsigned long rate = (usefulData2[2 * i] + usefulData2[2 * i + 1] - usefulData1[2 * i] - usefulData1[2 * i + 1])/(1024);
-		cout << devName[i] << " " << rate << endl;
+	//	cout << devName[i] << " " << rate << endl;
 		Info.append("{\"");
 		Info.append(devName[i]);
 		Info.append("\":\"");
@@ -291,5 +345,55 @@ string GetData::getNetWorkStatus(){
 	reader2.close();
 
 	return Info;
+}
+string GetData::getIp(){
+	int tmpFd;
+	int intr;
+	struct ifreq buf[16];
+	struct ifconf ifc;
+
+
+	string Info = "{\"Ip\":\"";
+	
+
+
+
+	tmpFd = socket(AF_INET, SOCK_DGRAM, 0);
+
+	if (tmpFd < 0){
+		return "Wrong Address";
+	}
+
+	ifc.ifc_len = sizeof(buf);
+	ifc.ifc_ifcu.ifcu_buf = (caddr_t) buf;
+
+	if (ioctl(tmpFd, SIOCGIFCONF, (char *)&ifc)){
+		return "Wrong Address";
+	}
+	intr = ifc.ifc_len / sizeof(struct ifreq);
+
+	while (intr-- > 0 && ioctl(tmpFd, SIOCGIFADDR, (char *)&buf[intr]))
+	  ;
+	close(tmpFd);
+
+	string data(inet_ntoa(((struct sockaddr_in *)(&buf[intr].ifr_ifru.ifru_addr))->sin_addr));
+
+	Info += data;
+	Info.append("\"}");
+
+	cout << endl;
+
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+	cout << endl;
+
+	cout << Info << endl;
+	return Info;
+
 }
 

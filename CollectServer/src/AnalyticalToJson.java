@@ -36,7 +36,7 @@ public class AnalyticalToJson {
             TempData tempData = TempData.getInstance();
             tempData.addKeyValue(infoData, jsonObject.get(infoData).toString());
             sqlData += jsonObject.get(infoData).toString() + "','";
-            System.out.println("OVer");
+            System.out.println("Over");
 
         }
 
@@ -44,7 +44,7 @@ public class AnalyticalToJson {
         sqlData = sqlData.replaceAll("\"", "\\\"");
         sqlData = sqlData.substring(0, sqlData.length() - 2);
         sqlData += ");";
-        System.out.println(sqlData);
+    //    System.out.println(sqlData);
 
         // System.out.println(json.get("ClientBaseInfo"));
 

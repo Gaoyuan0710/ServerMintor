@@ -37,4 +37,5 @@ class GetData{
 		string getCpuRate();
 		string getNetWorkStatus();
 		string getDiskIO();
+		string getIp();
 };

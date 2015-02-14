@@ -111,7 +111,7 @@ public class StoreToDatabase {
 
         sql += data;
 
-   //     System.out.println(sql);
+        System.out.println(sql);
 
 
         dbStatue.execute(sql);
@@ -136,4 +136,28 @@ public class StoreToDatabase {
         //  String sql = "UPDATE clientList SET `Name`='yuan', `CpuInfo`='is' WHERE `ID`='1'";
 
     }
+    public static String findBaseInfo(int id) throws SQLException {
+        String sql = "";
+        String data = "";
+
+        if (id != 0) {
+            sql = "select Name from clientList where ID = ";
+            sql += id;
+        }
+        else {
+            sql = "select Name from clientList";
+        }
+
+        connection = getConnection();
+        Statement dbStatue = connection.createStatement();
+
+        ResultSet resultSet = dbStatue.executeQuery(sql);
+        while (resultSet.next()) {
+            data += resultSet.getString("Name");
+            data += ",";
+        }
+        data = data.substring(0, data.length() - 1);
+        return data;
+    }
+
 }

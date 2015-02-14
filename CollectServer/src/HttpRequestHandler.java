@@ -73,20 +73,24 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
                 if (parame == null) {
                     return;
                 }
-                List<String> q = parame.get("get");
+                List<String> actionlist = parame.get("action");
+                List<String> serverListId = parame.get("serverId");
+                int i = 0;
                 String data = "[";
 
-                for (String sourceRequest : q) {
-                    System.out.println(sourceRequest);
-                    int clientID = Integer.valueOf(sourceRequest.substring(0, 1));
-                    String infoType = sourceRequest.substring(1, sourceRequest.length());
+                for (String sourceRequest : actionlist) {
+                    System.out.println(Integer.valueOf(serverListId.get(i)) + " " + sourceRequest);
+                  //  int clientID = Integer.valueOf(sourceRequest.substring(0, 1));
+
+                  //  String infoType = sourceRequest;
 
                     if (sourceRequest != null && !sourceRequest.equals("")) {
                         //    String data = "<html><body>ÄãºÃ£¬GET</body><html>";
 
-                        data += DealGetRequest.getInfo(clientID, infoType);
+                        data += DealGetRequest.getInfo(Integer.valueOf(serverListId.get(i)), sourceRequest);
                         data += ",";
                     }
+                    i++;
                 }
                 data = data.substring(0, data.length() - 1);
                 data += "]";
