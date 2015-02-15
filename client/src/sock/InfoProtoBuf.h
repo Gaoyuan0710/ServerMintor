@@ -33,6 +33,7 @@ class InfoProtoBuf{
 					ServerInfo::InfoPackage *senddata, char *buf);
 
 
+
 };
 
 #endif

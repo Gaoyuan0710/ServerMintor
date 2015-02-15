@@ -92,7 +92,7 @@ void sockOperator::socketMain(){
 }
 void sockOperator::dealWithEpoll(){
 	struct epoll_event event[this->kEpollEvent];
-	char dataBuf[1024];
+	char dataBuf[2048];
 
 	epollFd = epoll_create(kMaxFdSize);
 	
@@ -100,6 +100,8 @@ void sockOperator::dealWithEpoll(){
 	addEvent(epollFd, pipeFd, EPOLLIN);
 
 	for (;;){
+		memset(dataBuf, 0, sizeof(dataBuf));
+
 		int ret = epoll_wait(epollFd, event, kEpollEvent, -1);
 
 		for (int i = 0; i < ret ; i++){
@@ -117,7 +119,7 @@ void sockOperator::dealWithEpoll(){
 			if ((event[i].events & EPOLLOUT) && (fd == sockfd)){
 				cout << "sockFd write" << endl;
 			//	dealPipeRead(dataBuf);
-				dealWrite(dataBuf);
+		//		dealWrite(dataBuf);
 			}
 		}
 	}
@@ -125,16 +127,18 @@ void sockOperator::dealWithEpoll(){
 
 bool sockOperator::dealSockFd(){
 	int readLen;
-	char buf[1024];
+	char buf[2048];
 	
-	readLen = read(sockfd, buf, 1024);
+	readLen = read(sockfd, buf, 2048);
 	if (readLen >= 0){
 		cout << "Recv Message From Server\n" << buf << endl;
+
+		sleep(1);
 	}
 	else {
 		perror("read from server error");
 
-		exit(1);
+//		exit(1);
 	}
 
 	return true;
@@ -142,7 +146,8 @@ bool sockOperator::dealSockFd(){
 bool sockOperator::dealPipeRead(char *buf){
 	int readLen;
 
-	readLen = read(pipeFd, buf, 1024);
+	bzero(buf, sizeof(buf));
+	readLen = read(pipeFd, buf, 2048);
 
 	if (-1 == readLen){
 		perror("read error");
@@ -157,10 +162,18 @@ bool sockOperator::dealPipeRead(char *buf){
 	}
 	else{
 		cout << "Recv Message From CollectFunction\n" << endl;
-		cout << buf << endl;
+
+		cout << "pipeRead " << readLen << "while buf size " << strlen(buf) << endl;
+	//	cout << buf << endl;
 //		modifyEvent(epollFd, sockfd, EPOLLOUT);
 //		dealWrite(buf);
-		write(sockfd, buf, readLen);
+//
+//		cout << buf << endl;
+
+int i = 		write(sockfd, buf, readLen);
+
+		cout << "socket write " << i << endl;
+
 	}
 
 	return true;

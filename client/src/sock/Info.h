@@ -27,7 +27,10 @@ enum InfoType{
 	MemInfo = 4,
 	CpuRate = 5,
 	NetWorkInfo = 6,
-	DiskIO = 7
+	DiskIO = 7,
+	ProInfoSortByCpu = 8,
+	ProInfoSortByMem = 9,
+	NetWorkNums = 10
 };
 struct mypacket{
 	int infoTypes;

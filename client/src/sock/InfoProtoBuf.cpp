@@ -22,19 +22,31 @@
 
 bool InfoProtoBuf::packing(string info, int type, struct mypacket *infoPacket){
 	infoPacket->infoTypes = type;
-	infoPacket->infoDate.append(info.c_str());
+//	infoPacket->infoDate.append(info.c_str());
 	infoPacket->infoLen = info.size();
 
+	infoPacket->infoDate = info.c_str();
+//	infoPacket->infoLen = info.size();
 	return true;
 }
 
 bool InfoProtoBuf::msgSerialize(struct mypacket *infoPacket, ServerInfo::InfoPackage *senddata, char *buf){
 	
 	senddata->set_infotypes(infoPacket->infoTypes);
+
 	senddata->set_infodata(infoPacket->infoDate);
+
+//	senddata->set_infolen(sizeof(infoPacket));
+
+
 	senddata->set_infolen(infoPacket->infoLen);
+
+	std::cout << "Size " << sizeof(infoPacket) << " Byte " << senddata->ByteSize() << std::endl;
+
+
 
 	senddata->SerializeToArray(buf, senddata->ByteSize());
 
 	return true;
 }
+

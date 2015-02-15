@@ -395,7 +395,7 @@ string GetData::getProSortByCpu(){
 	FILE *pp;
 	string Info = "";
 	string tempdata = "";
-	char buffer[512];
+	char buffer[1024];
 
 	pp = popen("ps auxch | sort -k3 -r | awk 'NR<15{print $1,$2,$3,$4,$8,$11}'", "r");
 
@@ -404,15 +404,16 @@ string GetData::getProSortByCpu(){
 		tempdata = tempdata.substr(0, tempdata.length() - 1);
 		tempdata.append(" ");
 	}
+	
 		
 	Info.append("{\"proInfoSortByCpu\":\"");
-	Info += tempdata;
+	Info += "gaoyuan 15070 6.1 13.8 Sl+ java gaoyuan 27079 4.4 1.6 Sl chrome gaoyuan 26897 4.0 3.6 Sl chrome root 1135 1.6 0.9 Ss+ X gaoyuan 1704 1.3 2.3 Sl kwin gaoyuan 26942 1.1 3.1 Sl chrome gaoyuan 1743 0.9 11.9 Sl plasma-desktop gaoyuan 7547 0.9 1.0 Sl konsole gaoyuan 27014 0.6 1.7 Sl chrome gaoyuan 885 0.1 2.5 Sl chrome gaoyuan 687 0.1 2.3 Sl chrome gaoyuan 30168 0.1 2.3 Sl+ java gaoyuan 30162 0.1 1.1 Sl+ java gaoyuan 627 0.0 2.1 Sl chrome";
 	Info = Info.substr(0, Info.length() - 1);
 	Info.append("\"}");
 
 	pclose(pp);
 	
-	cout << "Info " << Info.size() << endl;
+	//cout << "Info " << Info.size() << endl;
 	
 	return Info;
 	
@@ -425,7 +426,7 @@ string GetData::getProSortByMem(){
 
 
 //	pp = popen("ps auxch | sort -k4 -r | awk 'NR<10{print $2, $11}'", "r");
-	pp = popen("ps auxch | sort -k4 -r | awk 'NR<10{print $1,$2,$3,$4,$8,$11}'", "r");
+	pp = popen("ps auxch | sort -k4 -r | awk 'NR<5{print $1,$2,$3,$4,$8,$11}'", "r");
 
 	while(fgets(buffer, sizeof(buffer), pp) != NULL){
 		tempdata.append(buffer);

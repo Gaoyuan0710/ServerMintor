@@ -1,5 +1,5 @@
 collectClient:main.o ServerInfo.pb.o socketOperator.o InfoProtoBuf.o GetData.o collect.o
-	g++ -o collectClient main.o ServerInfo.pb.o socketOperator.o InfoProtoBuf.o GetData.o collect.o -lprotobuf
+	g++ -g -o collectClient main.o ServerInfo.pb.o socketOperator.o InfoProtoBuf.o GetData.o collect.o -lprotobuf
 main.o:main.cpp InfoProtoBuf.h Info.h ServerInfo.pb.h GetData.h socketOperator.h
 	g++ -c main.cpp 
 ServerInfo.pb.o:ServerInfo.pb.cc ServerInfo.pb.h
