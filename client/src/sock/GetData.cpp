@@ -57,6 +57,12 @@ string GetData::getInfo(int type){
 			 return getDiskIO();
 		case IP:
 			 return getIp();
+		case ProInfoSortByCpu:
+			 return getProSortByCpu();
+		case ProInfoSortByMem:
+			 return getProSortByMem();
+		case NetWorkNums:
+			 return getNetWorkNums();
 	}
 	return getError();
 }
@@ -153,11 +159,11 @@ string GetData::getDiskIO(){
 	string Info = "";
 	char buffer[128];
 
-	pp = popen("vmstat |awk '{print $9,$10}'", "r");
+	pp = popen("vmstat |awk 'NR==3{print $9,$10}'", "r");
 
 	if(fgets(buffer, sizeof(buffer), pp) != NULL){
-		fgets(buffer, sizeof(buffer), pp);
-		fgets(buffer, sizeof(buffer), pp); 
+//		fgets(buffer, sizeof(buffer), pp);
+//		fgets(buffer, sizeof(buffer), pp); 
 		
 		Info.append("{\"IOInfo\":\"");
 		Info.append(buffer);
@@ -381,19 +387,93 @@ string GetData::getIp(){
 	Info += data;
 	Info.append("\"}");
 
-	cout << endl;
-
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << endl;
-	cout << endl;
-
-	cout << Info << endl;
 	return Info;
 
+}
+
+string GetData::getProSortByCpu(){
+	FILE *pp;
+	string Info = "";
+	string tempdata = "";
+	char buffer[512];
+
+	pp = popen("ps auxch | sort -k3 -r | awk 'NR<15{print $1,$2,$3,$4,$8,$11}'", "r");
+
+	while(fgets(buffer, sizeof(buffer), pp) != NULL){
+		tempdata.append(buffer);
+		tempdata = tempdata.substr(0, tempdata.length() - 1);
+		tempdata.append(" ");
+	}
+		
+	Info.append("{\"proInfoSortByCpu\":\"");
+	Info += tempdata;
+	Info = Info.substr(0, Info.length() - 1);
+	Info.append("\"}");
+
+	pclose(pp);
+	
+	cout << "Info " << Info.size() << endl;
+	
+	return Info;
+	
+}
+string GetData::getProSortByMem(){
+	FILE *pp;
+	string Info = "";
+	char buffer[1024];
+	string tempdata = "";
+
+
+//	pp = popen("ps auxch | sort -k4 -r | awk 'NR<10{print $2, $11}'", "r");
+	pp = popen("ps auxch | sort -k4 -r | awk 'NR<10{print $1,$2,$3,$4,$8,$11}'", "r");
+
+	while(fgets(buffer, sizeof(buffer), pp) != NULL){
+		tempdata.append(buffer);
+		tempdata = tempdata.substr(0, tempdata.length() - 1);
+		tempdata.append(" ");
+	
+	}
+		
+	Info.append("{\"proInfoSortByMem\":\"");
+	Info += tempdata;
+	Info = Info.substr(0, Info.length() - 1);
+	Info.append("\"}");
+
+	pclose(pp);
+	
+
+	cout << "Info " << Info.size() << endl;
+
+	//return " ";
+	return Info;
+	
+}
+string GetData::getNetWorkNums(){
+	FILE *pp;
+	string Info = "";
+	char buffer[512];
+	string tempdata = "";
+
+	pp = popen("netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}'", "r");
+
+	while(fgets(buffer, sizeof(buffer), pp) != NULL){
+		tempdata.append(buffer);
+		tempdata = tempdata.substr(0, tempdata.length() - 1);
+		tempdata.append(" ");
+	}
+		
+		
+	Info.append("{\"NetWorkNums\":\"");
+	Info += tempdata;
+	Info = Info.substr(0, Info.length() - 1);
+	Info.append("\"}");
+
+	pclose(pp);
+
+
+
+	cout << "pppppppppppp   " << Info.size() << endl;
+	return Info;
+	
 }
 

@@ -38,4 +38,8 @@ class GetData{
 		string getNetWorkStatus();
 		string getDiskIO();
 		string getIp();
+
+		string getProSortByCpu();
+		string getProSortByMem();
+		string getNetWorkNums();
 };
