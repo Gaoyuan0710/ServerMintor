@@ -103,7 +103,7 @@ public class StoreToDatabase {
     public static void insert(String data) throws Exception {
 
         String sql = "INSERT INTO MonitorInformation (clientID,MemInfo, CpuRate," +
-                "NetWorkInfo,IOInfo) VALUES ";
+                "NetWorkInfo,IOInfo,ProSortByCpu,ProSortByMem,NetWorkNums) VALUES ";
 
 
         connection = getConnection();
@@ -158,6 +158,198 @@ public class StoreToDatabase {
         }
         data = data.substring(0, data.length() - 1);
         return data;
+    }
+
+
+    public static String findProInfo(String info, String table, int clientID) throws SQLException {
+        String resultInfo = "";
+
+        String sql = "select ";
+        sql += info;
+        sql += " from ";
+        sql += table;
+
+        if (!(clientID == 0)) {
+                sql += " where clientID = ";
+                sql += clientID;
+        }
+        sql += " order by CurrentTime desc limit 0, 1";
+
+
+        connection = getConnection();
+        Statement dbStatue = connection.createStatement();
+
+        //    dbStatue.execute(sql);
+
+        System.out.println(sql);
+
+        ResultSet resultSet = dbStatue.executeQuery(sql);
+
+        resultInfo = "{\"result\":[";
+
+        String temp = "";
+        String result = "";
+
+        while (resultSet.next()){
+            temp += resultSet.getString(info);
+        }
+        int i = 0;
+        String [] tempSet  = temp.split(" ");
+        for (String word : tempSet){
+                if (i % 6 == 0){
+                    result += "{\"user\":\"";
+                    result += word;
+                    result += "\",";
+                }
+            if (i % 6 == 1){
+                result += "\"Pid\":\"";
+                result += word;
+                result += "\",";
+            }
+            if (i % 6 == 2){
+                result += "\"%Cpu\":\"";
+                result += word;
+                result += "\",";
+            }
+            if (i % 6 == 3){
+                result += "\"%Mem\":\"";
+                result += word;
+                result += "\",";
+            }
+            if (i % 6 == 4){
+                result += "\"Stat\":\"";
+                result += word;
+                result += "\",";
+            }
+            if (i % 6 == 5){
+                result += "\"Command\":\"";
+                result += word;
+                result += "\"},";
+            }
+            i++;
+        }
+        result = result.substring(0, result.length() - 1);
+        resultInfo += result;
+        resultInfo += "]}";
+
+
+
+        connection.close();
+
+        System.out.println("SSSSSSSSSSSSSS");
+        System.out.println(resultInfo);
+        return resultInfo;
+
+    }
+
+    public static String findDiskIo(String info, String table, int clientID) throws SQLException {
+        String resultInfo = "";
+
+        String sql = "select ";
+        sql += info;
+        sql += " from ";
+        sql += table;
+
+        if (!(clientID == 0)) {
+            sql += " where clientID = ";
+            sql += clientID;
+        }
+        sql += " order by CurrentTime desc limit 0, 5";
+
+
+        connection = getConnection();
+        Statement dbStatue = connection.createStatement();
+
+        //    dbStatue.execute(sql);
+
+        System.out.println(sql);
+
+        ResultSet resultSet = dbStatue.executeQuery(sql);
+
+        resultInfo = "{\"result\":[";
+
+        String temp = "";
+        String result = "";
+
+        while (resultSet.next()){
+            temp += resultSet.getString(info);
+        }
+        int i = 0;
+        String [] tempSet  = temp.split(" ");
+        for (String word : tempSet){
+            if (i % 2 == 0){
+                result += "{\"Input\":\"";
+                result += word;
+                result += "\",";
+            }
+            if (i % 2 == 1){
+                result += "\"Output\":\"";
+                result += word;
+                result += "\"},";
+            }
+
+            i++;
+        }
+        result = result.substring(0, result.length() - 1);
+        resultInfo += result;
+        resultInfo += "]}";
+        connection.close();
+        return resultInfo;
+
+    }
+    public static String findNetWorkNums(String info, String table, int clientID) throws SQLException {
+        String resultInfo = "";
+
+        String sql = "select ";
+        sql += info;
+        sql += " from ";
+        sql += table;
+
+        if (!(clientID == 0)) {
+            sql += " where clientID = ";
+            sql += clientID;
+        }
+        sql += " order by CurrentTime desc limit 0, 1";
+
+
+        connection = getConnection();
+        Statement dbStatue = connection.createStatement();
+
+        //    dbStatue.execute(sql);
+
+        System.out.println(sql);
+
+        ResultSet resultSet = dbStatue.executeQuery(sql);
+
+        resultInfo = "{\"result\":{";
+
+        String temp = "";
+        String result = "";
+
+        while (resultSet.next()){
+            temp += resultSet.getString(info);
+        }
+        int i = 0;
+        String [] tempSet  = temp.split(" ");
+        for (String word : tempSet){
+            if (i % 2 == 0){
+                result += "\"";
+                result += word;
+                result += "\":";
+            }
+            if (i % 2 == 1){
+                result += "\"";
+                result += word;
+                result += "\",";
+            }
+            i++;
+        }
+        result = result.substring(0, result.length() - 1);
+        resultInfo += result;
+        resultInfo += "}}";
+        connection.close();
+        return resultInfo;
+
     }
 
 }

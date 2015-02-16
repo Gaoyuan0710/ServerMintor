@@ -16,8 +16,8 @@ public final class CollectServer {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
-            ServerBootstrap Collect = new ServerBootstrap();
-            Collect.group(bossGroup, workerGroup)
+            ServerBootstrap collect = new ServerBootstrap();
+            collect.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)
                     .childHandler(new CollectServerInitializer());
@@ -28,8 +28,11 @@ public final class CollectServer {
                     .childHandler(new HttpServerInitializer());
 
 
-            ChannelFuture f = Collect.bind(PORT).sync();
+            ChannelFuture f = collect.bind(PORT).sync();
             Channel ch = webServer.bind(8080).sync().channel();
+
+
+
             ch.closeFuture().sync();
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {

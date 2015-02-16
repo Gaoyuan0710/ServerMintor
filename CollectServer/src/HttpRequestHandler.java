@@ -17,10 +17,7 @@ import java.io.RandomAccessFile;
 import java.net.URI;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static io.netty.buffer.Unpooled.copiedBuffer;
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
@@ -69,25 +66,48 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
 //            }
             if (request.getMethod() == HttpMethod.GET) {
                 QueryStringDecoder decoder = new QueryStringDecoder(request.getUri());
+                System.out.println(request.getUri());
                 Map<String, List<String>> parame = decoder.parameters();
                 if (parame == null) {
                     return;
                 }
                 List<String> actionlist = parame.get("action");
                 List<String> serverListId = parame.get("serverId");
+                List<String> parameter = new ArrayList<String>();
+
+                if (parame.containsKey("parameter")) {
+                    System.out.println("You");
+                   parameter  = parame.get("parameter");
+                }
+                else {
+                    System.out.println("Mei you");
+                }
                 int i = 0;
                 String data = "[";
+            //String data = "<html><body>ÄãºÃ£¬GET</body><html>";
 
                 for (String sourceRequest : actionlist) {
-                    System.out.println(Integer.valueOf(serverListId.get(i)) + " " + sourceRequest);
+                    if (parameter.isEmpty()){
+                        System.out.println("Empty");
+                        System.out.println(Integer.valueOf(serverListId.get(i)) + " " + sourceRequest);
+                    }
+                    else {
+                        System.out.println("Not Empty");
+                        System.out.println(Integer.valueOf(serverListId.get(i)) + " " + sourceRequest + " " + parameter.get(i));
+                    }
                   //  int clientID = Integer.valueOf(sourceRequest.substring(0, 1));
 
                   //  String infoType = sourceRequest;
 
                     if (sourceRequest != null && !sourceRequest.equals("")) {
-                        //    String data = "<html><body>ÄãºÃ£¬GET</body><html>";
+                    //        String data = "<html><body>ÄãºÃ£¬GET</body><html>";
+                        if (parameter.isEmpty()) {
 
-                        data += DealGetRequest.getInfo(Integer.valueOf(serverListId.get(i)), sourceRequest);
+                            data += DealGetRequest.getInfo(Integer.valueOf(serverListId.get(i)), sourceRequest, "");
+                        }
+                        else {
+                            data += DealGetRequest.getInfo(Integer.valueOf(serverListId.get(i)), sourceRequest, parameter.get(i));
+                        }
                         data += ",";
                     }
                     i++;
