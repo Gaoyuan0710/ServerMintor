@@ -56,6 +56,7 @@ class sockOperator{
 		
 		bool dealWrite(char *buf);
 		void dealWithEpoll();
+		void dealOrder(string order);
 
 	private:
 		struct sockaddr_in destAddress;

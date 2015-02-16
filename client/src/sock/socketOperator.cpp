@@ -19,9 +19,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "updateConfig.h"
 #include "socketOperator.h"
 #include "ServerInfo.pb.h"
 #include "../log/log.cpp"
+
+using std::string;
+
 
 bool sockOperator::setAddrPort(){	
 	bzero(&destAddress, sizeof(destAddress));
@@ -133,7 +137,9 @@ bool sockOperator::dealSockFd(){
 	if (readLen >= 0){
 		cout << "Recv Message From Server\n" << buf << endl;
 
-		sleep(1);
+		dealOrder(buf);
+
+//		sleep(1);
 	}
 	else {
 		perror("read from server error");
@@ -227,3 +233,40 @@ bool sockOperator::addEvent(int epollFd, int fd, int state){
 
 	return true;
 }
+
+void sockOperator::dealOrder(string order){
+
+	
+	int index1 = order.find_first_of("&");
+	int index2 = order.find_last_of("&");
+
+
+	string myOrder = order.substr(0, index1);
+	
+	string serverId = order.substr(index1 + 1, index2 - index1 - 1);
+	
+	string parameter = order.substr(index2 + 1, order.length());
+
+	cout << index1 << " " << index2 << endl;
+	cout << myOrder << endl;
+	cout << serverId << endl;
+	cout << parameter << endl;
+/*
+	if (string(myorder) == string("")){
+		 myOrder = "init 6";
+		 
+//		 system(myOrder.c_str());
+	}
+	else if (string(order) == string("upateTime")){
+		updateSleepTime()
+	}
+	else {
+		myOrder = "kill -s 9 ";
+		myOrder += order;
+		
+//		system(myOrder.c_str());
+	}
+	
+*/
+
+} 
