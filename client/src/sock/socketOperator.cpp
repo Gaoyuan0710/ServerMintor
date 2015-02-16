@@ -139,6 +139,8 @@ bool sockOperator::dealSockFd(){
 
 		dealOrder(buf);
 
+		cout << "OOOKKKK" << endl;
+
 //		sleep(1);
 	}
 	else {
@@ -251,22 +253,37 @@ void sockOperator::dealOrder(string order){
 	cout << myOrder << endl;
 	cout << serverId << endl;
 	cout << parameter << endl;
-/*
-	if (string(myorder) == string("")){
+
+	cout << myOrder.compare("updateTime") << endl;
+	
+	cout << myOrder.compare("restart") << endl;
+	cout << myOrder.compare("killPro") << endl;
+	
+	if (myOrder.compare("restart") == 0){
 		 myOrder = "init 6";
 		 
+		 cout << "restart" << endl;
+
 //		 system(myOrder.c_str());
 	}
-	else if (string(order) == string("upateTime")){
-		updateSleepTime()
+	
+	else if (myOrder.compare("updateTime") == 0){
+	
+		cout << "updateTimessssssssssss" << endl;
+		cout << "updateTimessssssssssss" << endl;
+		cout << "updateTimessssssssssss" << endl;
+		cout << "updateTimessssssssssss" << endl;
+
+		updateSleepTime(atoi(parameter.c_str()));
 	}
-	else {
+	else if(myOrder.compare("killPro") == 0) {
+	cout << "killPro" << endl;
+
 		myOrder = "kill -s 9 ";
 		myOrder += order;
 		
 //		system(myOrder.c_str());
 	}
 	
-*/
-
+	cout << "over" << endl;
 } 

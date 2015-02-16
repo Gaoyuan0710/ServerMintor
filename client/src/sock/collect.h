@@ -16,6 +16,8 @@
 
 #include <iostream>
 
+#include "updateConfig.h"
+
 bool collectConfigureInfo(int fd);
 bool collectMonitor(int fd);
 void collectMain(int fd);

@@ -57,15 +57,22 @@ int getSleepTime(int oldTime){
 int updateSleepTime(int newTime){
 	char buf[512];
 
+	cout << "Entry " << endl;
+	cout << "Entry " << endl;
+	cout << "Entry " << endl;
+	cout << "Entry " << endl;
+	cout << "Entry " << endl;
+	cout << "Entry " << endl;
 	int fd = open( "config.txt", O_WRONLY);
 	
 	flock(fd, LOCK_EX);
 
 	sprintf(buf, "%d", newTime);
-
+cout << " New time " << newTime << endl; 
 	
-	write(fd, buf, strlen(buf));
+int i = 	write(fd, buf, strlen(buf));
 
+cout << "i " << i << " buf " << buf << endl;
 
 	flock(fd, LOCK_UN);
 	close(fd);

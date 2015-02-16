@@ -22,6 +22,6 @@
 #include <sys/stat.h>
 
 
-int getSleepTime();
+int getSleepTime(int sleepTime);
 int updateSleepTime(int sleepTime);
 
