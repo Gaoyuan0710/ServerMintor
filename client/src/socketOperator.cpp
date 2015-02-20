@@ -22,7 +22,7 @@
 #include "updateConfig.h"
 #include "socketOperator.h"
 #include "ServerInfo.pb.h"
-#include "../log/log.cpp"
+#include "log.h"
 
 using std::string;
 
@@ -32,7 +32,9 @@ bool sockOperator::setAddrPort(){
 	this->destAddress.sin_family = AF_INET;
 	this->destAddress.sin_port = htons(atoi(this->port.c_str()));
 	if (inet_pton(AF_INET, this->dest.c_str(), &destAddress.sin_addr) <= 0){
-		printf("inet_pton error");
+		mylog("errlog.txt", "inet_pton error");
+
+		return false;
 	}
 
 	return true;
@@ -44,34 +46,28 @@ bool sockOperator::connectServer(){
 
 	if (sockfd < 0){
 		mylog("errlog.txt", "Socket create err\n");
-
+		
 		return false;
 	}
 	
 	int ret = connect(sockfd, (struct sockaddr *) &destAddress, 
 				sizeof(destAddress));
 	if (ret != 0){
-		printf ("%d\n", ret);
 		perror("connect error");
 		mylog("errlog.txt", "Connect err\n");
 
 		return false;
 	}
-	cout << "Connect Successfully" << endl;
 	return true;
 }
 bool sockOperator::sendInfo(char *info, int len){
 	int ret =  send(sockfd, info, len, 0);
-	
-	cout << "Send " << ret << endl;
 
 	if (ret != len ){
 		mylog("errlog.txt", "Send Msg err\n");
 
 		return false;
 	}
-
-
 	return true;
 }
 bool sockOperator::connectLoop(){
@@ -99,7 +95,13 @@ void sockOperator::dealWithEpoll(){
 	char dataBuf[2048];
 
 	epollFd = epoll_create(kMaxFdSize);
-	
+
+	if (epollFd == -1){
+		mylog("errlog.txt", "epoll_create error");
+		
+		return;
+	}
+
 	addEvent(epollFd, sockfd, EPOLLIN);
 	addEvent(epollFd, pipeFd, EPOLLIN);
 
@@ -108,22 +110,21 @@ void sockOperator::dealWithEpoll(){
 
 		int ret = epoll_wait(epollFd, event, kEpollEvent, -1);
 
+		if (ret == -1) {
+			mylog("errlog.txt", "epoll_wait error");
+
+			return;
+		}
 		for (int i = 0; i < ret ; i++){
 			int fd = event[i].data.fd;
 
 			if ((event[i].events & EPOLLIN) && (fd == pipeFd)){
-				cout << "pipeFd read" << endl;
 				dealPipeRead(dataBuf);
 			}
 			if ((event[i].events & EPOLLIN) && (fd == sockfd)){
-				cout << "sockFd read" << endl;
-			//	dealPipeRead(dataBuf);
 				dealSockFd();
 			}
 			if ((event[i].events & EPOLLOUT) && (fd == sockfd)){
-				cout << "sockFd write" << endl;
-			//	dealPipeRead(dataBuf);
-		//		dealWrite(dataBuf);
 			}
 		}
 	}
@@ -135,18 +136,12 @@ bool sockOperator::dealSockFd(){
 	
 	readLen = read(sockfd, buf, 2048);
 	if (readLen >= 0){
-		cout << "Recv Message From Server\n" << buf << endl;
-
 		dealOrder(buf);
-
-		cout << "OOOKKKK" << endl;
-
-//		sleep(1);
 	}
 	else {
-		perror("read from server error");
+		mylog("errlog.txt", "read from server error");
 
-//		exit(1);
+		exit(1);
 	}
 
 	return true;
@@ -158,30 +153,25 @@ bool sockOperator::dealPipeRead(char *buf){
 	readLen = read(pipeFd, buf, 2048);
 
 	if (-1 == readLen){
-		perror("read error");
+		mylog("errlog.txt", "read from collect error");
 		close(pipeFd);
 		deleteEvent(epollFd, pipeFd, EPOLLIN);
 		exit (1);
 	}
 	else if (readLen == 0){
 		fprintf(stderr, "close collect function");
+		
+		mylog("errlog.txt", "close collect function");
+
 		close(pipeFd);
 		deleteEvent(epollFd, pipeFd, EPOLLIN);
 	}
 	else{
-		cout << "Recv Message From CollectFunction\n" << endl;
-
-		cout << "pipeRead " << readLen << "while buf size " << strlen(buf) << endl;
-	//	cout << buf << endl;
-//		modifyEvent(epollFd, sockfd, EPOLLOUT);
-//		dealWrite(buf);
-//
-//		cout << buf << endl;
-
-int i = 		write(sockfd, buf, readLen);
-
-		cout << "socket write " << i << endl;
-
+		int i = write(sockfd, buf, readLen);
+		
+		if (i < 0){
+			mylog("errlog.txt", "write error");
+		}
 	}
 
 	return true;
@@ -209,7 +199,11 @@ bool sockOperator::deleteEvent(int epollFd, int fd, int state){
 	tmp.events = state;
 	tmp.data.fd = fd;
 
-	epoll_ctl(epollFd, EPOLL_CTL_DEL, fd, &tmp);
+	int i = epoll_ctl(epollFd, EPOLL_CTL_DEL, fd, &tmp);
+
+	if (i < 0){
+		mylog("errlog.txt", "write error");
+	}
 
 	return true;
 }
@@ -220,7 +214,13 @@ bool sockOperator::modifyEvent(int epollFd, int fd, int state){
 	tmp.data.fd = fd;
 
 	int flag = epoll_ctl(epollFd, EPOLL_CTL_MOD, fd, &tmp);
-	cout << flag << endl;
+	
+	if (flag < 0){
+		mylog("errlog.txt", "write error");
+
+		return false;
+	}
+
 
 	return true;
 }
@@ -231,7 +231,13 @@ bool sockOperator::addEvent(int epollFd, int fd, int state){
 	tmp.events = state;
 	tmp.data.fd = fd;
 
-	epoll_ctl(epollFd, EPOLL_CTL_ADD,fd, &tmp);
+	int flag = 	epoll_ctl(epollFd, EPOLL_CTL_ADD,fd, &tmp);
+	
+	if (flag < 0){
+		mylog("errlog.txt", "write error");
+
+		return false;
+	}
 
 	return true;
 }
@@ -241,7 +247,7 @@ void sockOperator::dealOrder(string order){
 	
 	int index1 = order.find_first_of("&");
 	int index2 = order.find_last_of("&");
-
+	int tempId;
 
 	string myOrder = order.substr(0, index1);
 	
@@ -249,41 +255,26 @@ void sockOperator::dealOrder(string order){
 	
 	string parameter = order.substr(index2 + 1, order.length());
 
-	cout << index1 << " " << index2 << endl;
-	cout << myOrder << endl;
-	cout << serverId << endl;
-	cout << parameter << endl;
+	
+	sscanf(serverId.c_str(), "%d", &tempId);
 
-	cout << myOrder.compare("updateTime") << endl;
-	
-	cout << myOrder.compare("restart") << endl;
-	cout << myOrder.compare("killPro") << endl;
-	
+	if (tempId != clientId){
+		return;
+	}
 	if (myOrder.compare("restart") == 0){
 		 myOrder = "init 6";
-		 
-		 cout << "restart" << endl;
 
 //		 system(myOrder.c_str());
 	}
 	
 	else if (myOrder.compare("updateTime") == 0){
-	
-		cout << "updateTimessssssssssss" << endl;
-		cout << "updateTimessssssssssss" << endl;
-		cout << "updateTimessssssssssss" << endl;
-		cout << "updateTimessssssssssss" << endl;
-
 		updateSleepTime(atoi(parameter.c_str()));
 	}
 	else if(myOrder.compare("killPro") == 0) {
-	cout << "killPro" << endl;
 
 		myOrder = "kill -s 9 ";
 		myOrder += order;
 		
 //		system(myOrder.c_str());
 	}
-	
-	cout << "over" << endl;
 } 

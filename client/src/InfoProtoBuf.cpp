@@ -19,33 +19,29 @@
 #include "InfoProtoBuf.h"
 #include "ServerInfo.pb.h"
 #include "Info.h"
+#include "log.h"
+
 
 bool InfoProtoBuf::packing(string info, int type, struct mypacket *infoPacket){
 	infoPacket->infoTypes = type;
-//	infoPacket->infoDate.append(info.c_str());
 	infoPacket->infoLen = info.size();
-
 	infoPacket->infoDate = info.c_str();
-//	infoPacket->infoLen = info.size();
+	
 	return true;
 }
 
 bool InfoProtoBuf::msgSerialize(struct mypacket *infoPacket, ServerInfo::InfoPackage *senddata, char *buf){
 	
 	senddata->set_infotypes(infoPacket->infoTypes);
-
 	senddata->set_infodata(infoPacket->infoDate);
-
-//	senddata->set_infolen(sizeof(infoPacket));
-
-
 	senddata->set_infolen(infoPacket->infoLen);
+	bool flag = senddata->SerializeToArray(buf, senddata->ByteSize());
 
-	std::cout << "Size " << sizeof(infoPacket) << " Byte " << senddata->ByteSize() << std::endl;
+	if (flag == false){
+		mylog("errlog.txt", "SerializeToArray error");
 
-
-
-	senddata->SerializeToArray(buf, senddata->ByteSize());
+		return false;
+	}
 
 	return true;
 }

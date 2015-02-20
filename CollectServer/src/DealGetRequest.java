@@ -45,7 +45,6 @@ public class DealGetRequest {
         }
 
         else if(order.equals("updateTime")){
-            System.out.println("ssssssssssssssssssssss");
             return getOrders("updateTime", clientID, parameter);
         }
         else if(order.equals("killPro")){
@@ -56,6 +55,8 @@ public class DealGetRequest {
         }
 
         else{
+            ErrorLog.writeToFile("Get Wrong Get Request");
+
             return "No info";
         }
     }
@@ -69,7 +70,7 @@ public class DealGetRequest {
         return StoreToDatabase.find("MemInfo", "MonitorInformation", clientID);
     }
     public static String getCpuRate(int clientID) throws SQLException{
-        return StoreToDatabase.find("Cpurate", "MonitorInformation", clientID);
+        return StoreToDatabase.findCpuRate("Cpurate", "MonitorInformation", clientID);
     }
     public static String getNetWorkInfo(int clientID) throws SQLException{
         return StoreToDatabase.find("NetWorkInfo", "MonitorInformation", clientID);
@@ -101,7 +102,7 @@ public class DealGetRequest {
         sendOrder += parameter;
 
         if (order.equals("restart") || order.equals("killPro")){
-            if (parameter.isEmpty() ){//!parameter.equals("8541a5ab59c0e5436c2d7b39933bbc65")){
+            if (parameter.isEmpty()){//!parameter.equals("8541a5ab59c0e5436c2d7b39933bbc65")){
                 return "invaild passwd";
             }
         }
@@ -116,11 +117,6 @@ public class DealGetRequest {
         OnLineClient.channelGroup.write(Unpooled.copiedBuffer(sendOrder, CharsetUtil.UTF_8));
         OnLineClient.channelGroup.flush();
 
-
-
-
-    //    TempData tempData = TempData.getInstance();
-    //    System.out.println(tempData.getValue("NetWorkNums"));
         return "I have get your order, Please wait";
     }
 

@@ -13,41 +13,23 @@ public class AnalyticalToJson {
         sqlData += "\',\'";
 
 
-        System.out.println("Json Start");
         String type = json.names().toString();
         String infoString = type.substring(2, type.length() - 2);
-
-        //   System.out.println(infoString);
-        //   System.out.println(json.get(infoString));
 
         JSONArray infoArray = new JSONArray(json.get(infoString).toString());
 
         for (int i = 0; i < infoArray.length(); i++) {
             JSONObject jsonObject = infoArray.getJSONObject(i);
 
-            //     System.out.println(jsonObject);
             String infoType = jsonObject.names().toString();
             String infoData = infoType.substring(2, infoType.length() - 2);
 
-            System.out.println("Begin");
-            System.out.println(infoData);
-            System.out.println(jsonObject.get(infoData));
-
-            TempData tempData = TempData.getInstance();
-            tempData.addKeyValue(infoData, jsonObject.get(infoData).toString());
             sqlData += jsonObject.get(infoData).toString() + "','";
-            System.out.println("Over");
 
         }
-
-
         sqlData = sqlData.replaceAll("\"", "\\\"");
         sqlData = sqlData.substring(0, sqlData.length() - 2);
         sqlData += ");";
-        System.out.println(sqlData);
-
-        // System.out.println(json.get("ClientBaseInfo"));
-
 
         try {
             if (infoString.equals("MonitorInfo")) {
@@ -58,6 +40,7 @@ public class AnalyticalToJson {
 
         } catch (Exception e) {
             e.printStackTrace();
+            ErrorLog.writeToFile(e.toString());
         }
 
     }

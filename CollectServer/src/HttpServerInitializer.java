@@ -25,6 +25,5 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("deflater", new HttpContentCompressor());
         pipeline.addLast("handler", new HttpRequestHandler());
 
-        System.out.println("Initializer OK");
     }
 }

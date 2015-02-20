@@ -37,6 +37,7 @@ public final class CollectServer {
             f.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            ErrorLog.writeToFile(e.toString());
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();

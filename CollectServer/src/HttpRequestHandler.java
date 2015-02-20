@@ -1,20 +1,14 @@
-import com.mypackage.MyPackage;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
-import io.netty.handler.codec.DecoderResult;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.multipart.*;
-import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.EndOfDataDecoderException;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.util.CharsetUtil;
-import org.json.HTTP;
-import sun.nio.cs.ext.DoubleByte;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.URI;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
@@ -59,11 +53,10 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
     public void messageReceived(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
         if (msg instanceof HttpRequest) {
             HttpRequest request = this.request = (HttpRequest) msg;
-//            URI uri = new URI(request.getUri());
-//            if (!uri.getPath().startsWith("/form")) {
-//              writeMenu(ctx);
-//              return;
-//            }
+            if("/".equals(request.getUri())){
+                writePage(ctx);
+                return;
+            }
             if (request.getMethod() == HttpMethod.GET) {
                 QueryStringDecoder decoder = new QueryStringDecoder(request.getUri());
                 System.out.println(request.getUri());
@@ -84,23 +77,9 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
                 }
                 int i = 0;
                 String data = "[";
-            //String data = "<html><body>ÄãºÃ£¬GET</body><html>";
 
                 for (String sourceRequest : actionlist) {
-                    if (parameter.isEmpty()){
-                        System.out.println("Empty");
-                        System.out.println(Integer.valueOf(serverListId.get(i)) + " " + sourceRequest);
-                    }
-                    else {
-                        System.out.println("Not Empty");
-                        System.out.println(Integer.valueOf(serverListId.get(i)) + " " + sourceRequest + " " + parameter.get(i));
-                    }
-                  //  int clientID = Integer.valueOf(sourceRequest.substring(0, 1));
-
-                  //  String infoType = sourceRequest;
-
                     if (sourceRequest != null && !sourceRequest.equals("")) {
-                    //        String data = "<html><body>ÄãºÃ£¬GET</body><html>";
                         if (parameter.isEmpty()) {
 
                             data += DealGetRequest.getInfo(Integer.valueOf(serverListId.get(i)), sourceRequest, "");
@@ -114,7 +93,6 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
                 }
                 data = data.substring(0, data.length() - 1);
                 data += "]";
-                System.out.println(data);
                 ByteBuf buf = copiedBuffer(data, CharsetUtil.UTF_8);
                 FullHttpResponse response = new DefaultFullHttpResponse(
                         HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
@@ -123,7 +101,9 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
                 response.headers().set(ACCESS_CONTROL_ALLOW_ORIGIN, "*");
                 response.headers().set(CACHE_CONTROL, "private, must-revalidate");
                 ctx.channel().writeAndFlush(response);
-            } else if (request.getMethod() == HttpMethod.POST)
+            } else if (request.getMethod() == HttpMethod.POST){
+                ErrorLog.writeToFile("Get Post Request");
+            }
 
             {
                 decoder = new HttpPostRequestDecoder(factory, request);
@@ -159,23 +139,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
             }
         }
     }
-
-
-    private void writeString(ChannelHandlerContext ctx) {
-        String tempbuf = "<html>\n <body>\n <h1>Hi Zhanyongjun</h1>\n\n<p>My {'hellok': 'world'}.</p>\n\n</body>\n </html>";
-        TempData tempData = TempData.getInstance();
-        tempbuf += tempData.getValue("ClientBaseInfo");
-        ByteBuf buf = copiedBuffer(tempbuf, CharsetUtil.UTF_8);
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
-        response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
-        response.headers().set(CONTENT_LENGTH, buf.readableBytes());
-        ctx.channel().writeAndFlush(response);
-    }
-
     private void reset() {
         request = null;
-        // destroy the decoder to release all resources
         decoder.destroy();
         decoder = null;
     }
@@ -221,100 +186,14 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
         }
     }
 
-    private void writeMenu(ChannelHandlerContext ctx) {
-        // print several HTML forms
-        // Convert the response content to a ChannelBuffer.
-        responseContent.setLength(0);
-
-        // create Pseudo Menu
-        responseContent.append("<html>");
-        responseContent.append("<head>");
-        responseContent.append("<title>Netty Test Form</title>\r\n");
-        responseContent.append("</head>\r\n");
-        responseContent.append("<body bgcolor=white><style>td{font-size: 12pt;}</style>");
-
-        responseContent.append("<table border=\"0\">");
-        responseContent.append("<tr>");
-        responseContent.append("<td>");
-        responseContent.append("<h1>Netty Test Form</h1>");
-        responseContent.append("Choose one FORM");
-        responseContent.append("</td>");
-        responseContent.append("</tr>");
-        responseContent.append("</table>\r\n");
-
-        // GET
-        responseContent.append("<CENTER>GET FORM<HR WIDTH=\"75%\" NOSHADE color=\"blue\"></CENTER>");
-        responseContent.append("<FORM ACTION=\"/formget\" METHOD=\"GET\">");
-        responseContent.append("<input type=hidden name=getform value=\"GET\">");
-        responseContent.append("<table border=\"0\">");
-        responseContent.append("<tr><td>Fill with value: <br> <input type=text name=\"info\" size=10></td></tr>");
-        responseContent.append("<tr><td>Fill with value: <br> <input type=text name=\"secondinfo\" size=20>");
-        responseContent
-                .append("<tr><td>Fill with value: <br> <textarea name=\"thirdinfo\" cols=40 rows=10></textarea>");
-        responseContent.append("</td></tr>");
-        responseContent.append("<tr><td><INPUT TYPE=\"submit\" NAME=\"Send\" VALUE=\"Send\"></INPUT></td>");
-        responseContent.append("<td><INPUT TYPE=\"reset\" NAME=\"Clear\" VALUE=\"Clear\" ></INPUT></td></tr>");
-        responseContent.append("</table></FORM>\r\n");
-        responseContent.append("<CENTER><HR WIDTH=\"75%\" NOSHADE color=\"blue\"></CENTER>");
-
-        // POST
-        responseContent.append("<CENTER>POST FORM<HR WIDTH=\"75%\" NOSHADE color=\"blue\"></CENTER>");
-        responseContent.append("<FORM ACTION=\"/formpost\" METHOD=\"POST\">");
-        responseContent.append("<input type=hidden name=getform value=\"POST\">");
-        responseContent.append("<table border=\"0\">");
-        responseContent.append("<tr><td>Fill with value: <br> <input type=text name=\"info\" size=10></td></tr>");
-        responseContent.append("<tr><td>Fill with value: <br> <input type=text name=\"secondinfo\" size=20>");
-        responseContent
-                .append("<tr><td>Fill with value: <br> <textarea name=\"thirdinfo\" cols=40 rows=10></textarea>");
-        responseContent.append("<tr><td>Fill with file (only file name will be transmitted): <br> "
-                + "<input type=file name=\"myfile\">");
-        responseContent.append("</td></tr>");
-        responseContent.append("<tr><td><INPUT TYPE=\"submit\" NAME=\"Send\" VALUE=\"Send\"></INPUT></td>");
-        responseContent.append("<td><INPUT TYPE=\"reset\" NAME=\"Clear\" VALUE=\"Clear\" ></INPUT></td></tr>");
-        responseContent.append("</table></FORM>\r\n");
-        responseContent.append("<CENTER><HR WIDTH=\"75%\" NOSHADE color=\"blue\"></CENTER>");
-
-        // POST with enctype="multipart/form-data"
-        responseContent.append("<CENTER>POST MULTIPART FORM<HR WIDTH=\"75%\" NOSHADE color=\"blue\"></CENTER>");
-        responseContent.append("<FORM ACTION=\"/formpostmultipart\" ENCTYPE=\"multipart/form-data\" METHOD=\"POST\">");
-        responseContent.append("<input type=hidden name=getform value=\"POST\">");
-        responseContent.append("<table border=\"0\">");
-        responseContent.append("<tr><td>Fill with value: <br> <input type=text name=\"info\" size=10></td></tr>");
-        responseContent.append("<tr><td>Fill with value: <br> <input type=text name=\"secondinfo\" size=20>");
-        responseContent
-                .append("<tr><td>Fill with value: <br> <textarea name=\"thirdinfo\" cols=40 rows=10></textarea>");
-        responseContent.append("<tr><td>Fill with file: <br> <input type=file name=\"myfile\">");
-        responseContent.append("</td></tr>");
-        responseContent.append("<tr><td><INPUT TYPE=\"submit\" NAME=\"Send\" VALUE=\"Send\"></INPUT></td>");
-        responseContent.append("<td><INPUT TYPE=\"reset\" NAME=\"Clear\" VALUE=\"Clear\" ></INPUT></td></tr>");
-        responseContent.append("</table></FORM>\r\n");
-        responseContent.append("<CENTER><HR WIDTH=\"75%\" NOSHADE color=\"blue\"></CENTER>");
-
-        responseContent.append("</body>");
-        responseContent.append("</html>");
-
-        ByteBuf buf = copiedBuffer(responseContent.toString(), CharsetUtil.UTF_8);
-        // Build the response object.
-        FullHttpResponse response = new DefaultFullHttpResponse(
-                HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
-
-        response.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
-        response.headers().set(CONTENT_LENGTH, buf.readableBytes());
-
-        // Write the response.
-        ctx.channel().writeAndFlush(response);
-    }
-
     private void writePage(ChannelHandlerContext ctx) throws IOException {
         boolean keepAlive = isKeepAlive(request);
         if ("/".equals(request.getUri())) {
             String info = "";
-            System.out.println("Openfile");
             RandomAccessFile raf = new RandomAccessFile("/home/gaoyuan/MyStation/index.html", "r");
             MappedByteBuffer out = raf.getChannel().map(FileChannel.MapMode.READ_ONLY, 0, raf.length());
             for (int i = 0; i < raf.length(); i++) {
                 byte tmp = out.get(i);
-                System.out.print((char) tmp);
                 info += (char) tmp;
             }
             ByteBuf buf = copiedBuffer(info, CharsetUtil.UTF_8);
@@ -333,6 +212,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<HttpObject> 
                     ctx.channel().write(new ChunkedFile(raf, 0, fileLength, 8192));//8kb
                 }
             } catch (Exception e2) {
+                ErrorLog.writeToFile(e2.toString());
                 e2.printStackTrace();
 
             } finally {

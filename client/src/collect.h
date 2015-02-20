@@ -1,11 +1,11 @@
 // =====================================================================================
 // 
-//       Filename:  Info.h
+//       Filename:  collect.h
 //
 //    Description:  
 //
 //        Version:  1.0
-//        Created:  2014年10月28日 20时38分47秒
+//        Created:  2015年01月14日 16时59分33秒
 //       Revision:  none
 //       Compiler:  g++
 //
@@ -15,26 +15,9 @@
 // =====================================================================================
 
 #include <iostream>
-#include <string>
 
-using std::string;
+#include "updateConfig.h"
 
-enum InfoType{
-	Notype = 0,
-	ClientBaseInfo = 1,
-	CpuInfo = 2,
-	IP = 3,
-	MemInfo = 4,
-	CpuRate = 5,
-	NetWorkInfo = 6,
-	DiskIO = 7,
-	ProInfoSortByCpu = 8,
-	ProInfoSortByMem = 9,
-	NetWorkNums = 10
-};
-struct mypacket{
-	int infoTypes;
-	int infoLen;
-	string infoDate;
-};
-
+bool collectConfigureInfo(int, int);
+bool collectMonitor(int, int );
+void collectMain(int, int);

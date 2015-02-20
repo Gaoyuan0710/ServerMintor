@@ -1,11 +1,11 @@
 // =====================================================================================
 // 
-//       Filename:  updateConfig.cpp
+//       Filename:  testLog.cpp
 //
 //    Description:  
 //
 //        Version:  1.0
-//        Created:  2015年02月16日 13时26分02秒
+//        Created:  2015年02月20日 15时10分42秒
 //       Revision:  none
 //       Compiler:  g++
 //
@@ -14,14 +14,14 @@
 // 
 // =====================================================================================
 
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/file.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <iostream>
+#include "log.h"
+
+int main(int argc, char *argv[])
+{
+	mylog("123.txt", "nihaoa");
 
 
-int getSleepTime(int sleepTime);
-int updateSleepTime(int sleepTime);
+	return 0;
+}
 

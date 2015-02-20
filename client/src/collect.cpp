@@ -24,11 +24,12 @@
 #include "GetData.h"
 #include "socketOperator.h"
 #include "updateConfig.h"
+#include "log.h"
 
 using std::cout;
 using std::endl;
 
-bool collectConfigureInfo(int fd){
+bool collectConfigureInfo(int fd, int num){
 	bool flag;
 	struct mypacket packet;
 	string info = "";
@@ -49,37 +50,34 @@ bool collectConfigureInfo(int fd){
 	}
 	info.append("]}");
 
-	flag = InfoProtoBuf::packing(info, CpuInfo, &packet);
+	flag = InfoProtoBuf::packing(info, num, &packet);
 
 	if (flag != true){
-		cout << "Packing error" << endl;
+
+		mylog ("errlog.txt", "packing error");
 
 		return false;
 	}
-/*
-	cout << "Types: " << packet.infoTypes << endl;
-	cout << "Len: " << packet.infoLen << endl;
-	cout << "Data:" << packet.infoDate << endl;
-*/	
+	
 	flag = InfoProtoBuf::msgSerialize(&packet, &sendData, temp);
 
-
-
 	if (flag != true){
-		cout << "msgSerialize error" << endl;
+		return false;
+	}
+
+	int i = write (fd, temp, sendData.ByteSize());
+
+	if (i < 0){
+		mylog("errlog.txt", "write to pipe error");
 
 		return false;
 	}
 
-	write (fd, temp, sendData.ByteSize());
-
-
-//	int i = write (fd, a.c_str(), a.size());
 	return true;
 	
 }
 
-bool collectMonitor(int fd){
+bool collectMonitor(int fd, int num){
 	bool flag;
 	struct mypacket packet;
 	string info = "";
@@ -100,26 +98,13 @@ bool collectMonitor(int fd){
 	}
 	info.append("]}");
 
-//string tmp = "{\"ProInfoSortByCpu\":[{\"proInfoSortByCpu\":\"gaoyuan 15070 6.1 13.8 Sl+ java gaoyuan 27079 4.4 1.6 Sl chrome gaoyuan 26897 4.0 3.6 Sl chrome root 1135 1.6 0.9 Ss+ X gaoyuan 1704 1.3 2.3 Sl kwin gaoyuan 26942 1.1 3.1 Sl chrome gaoyuan 1743 0.9 11.9 Sl plasma-desktop gaoyuan 7547 0.9 1.0 Sl konsole gaoyuan 27014 0.6 1.7 Sl chrome gaoyuan 885 0.1 2.5 Sl chrome gaoyuan 687 0.1 2.3 Sl chrome gaoyuan 30168 0.1 2.3 Sl+ java gaoyuan 30162 0.1 1.1 Sl+ java gaoyuan 627 0.0 2.1 Sl chrom\"}]}";
-//info.append(",");
-//info.append(tmp);
-
-
-	//cout << "Monitor size "  << info.size() << endl;
-
-//	flag = InfoProtoBuf::packing(tmp, CpuInfo, &packet);
-	flag = InfoProtoBuf::packing(info, CpuInfo, &packet);
+	flag = InfoProtoBuf::packing(info, num, &packet);
 
 	if (flag != true){
-		cout << " Packing error" << endl;
+		mylog("errlog.txt", "Packing error");
 
 		return false;
 	}
-	
-//	cout << "Types: " << packet.infoTypes << endl;
-//	cout << "Len: " << packet.infoLen << endl;
-//	cout << "Data:" << packet.infoDate << endl;
-
 
 	memset(temp, 0, sizeof(temp));
 
@@ -127,7 +112,7 @@ bool collectMonitor(int fd){
 
 
 	if (flag != true){
-		cout << "msgSerialize error" << endl;
+		mylog("errlog.txt", "msgSerialize error");
 
 		return false;
 	}
@@ -135,16 +120,16 @@ bool collectMonitor(int fd){
 	int i = write (fd, temp, sendData.ByteSize());
 
 
-	cout << "Common pipe write = " << i << " " << sendData.ByteSize()  << " " << strlen(temp)<< endl;
-//	int i = write (fd, a.c_str(), a.size());
-	cout << "i = " << i << " " << sendData.ByteSize() << endl;
-	return true;
-	
+	if (i < 0){
+		mylog("errlog.txt", "write to pipe error");
 
+		return false;
+	}
+	return true;
 }
 
 
-void collectMain(int fd){
+void collectMain(int fd, int num){
 
 	int sleepTime = getSleepTime(30);
 
@@ -152,13 +137,12 @@ void collectMain(int fd){
 		sleepTime = 30;
 	}
 
-	collectConfigureInfo(fd);
+	collectConfigureInfo(fd, num);
 	while (1){
-		collectMonitor(fd);
+		collectMonitor(fd, num);
 
+		sleep(10);
 		sleep(sleepTime);
-
-		cout << "Sleep Time " << sleepTime << endl;
 
 		sleepTime = getSleepTime(30);
 	}

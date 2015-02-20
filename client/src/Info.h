@@ -1,11 +1,11 @@
 // =====================================================================================
 // 
-//       Filename:  getData.cpp
+//       Filename:  Info.h
 //
 //    Description:  
 //
 //        Version:  1.0
-//        Created:  2014年10月28日 20时28分43秒
+//        Created:  2014年10月28日 20时38分47秒
 //       Revision:  none
 //       Compiler:  g++
 //
@@ -13,28 +13,31 @@
 //        Company:  Class 1204 of Computer Science and Technology
 // 
 // =====================================================================================
+#ifndef INFO_H
+#define INFO_H
 
 #include <iostream>
 #include <string>
 
-//#include "Info.h"
-
-using std::endl;
-using std::cout;
-using std::cin;
 using std::string;
 
-
-class GetData{
-	public:
-		GetData(int type = 0):WAIT_TIME(1){}
-		string getInfo(int types);
-		string getError();
-		string getClientInfo();
-		string getCpuInfo();
-		string getMemInfo();
-		string getCpuRate();
-	private:
-		const int WAIT_TIME;
-
+enum InfoType{
+	Notype = 0,
+	ClientBaseInfo = 1,
+	CpuInfo = 2,
+	IP = 3,
+	MemInfo = 4,
+	CpuRate = 5,
+	NetWorkInfo = 6,
+	DiskIO = 7,
+	ProInfoSortByCpu = 8,
+	ProInfoSortByMem = 9,
+	NetWorkNums = 10
 };
+struct mypacket{
+	int infoTypes;
+	int infoLen;
+	string infoDate;
+};
+
+#endif

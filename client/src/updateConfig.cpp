@@ -26,6 +26,7 @@
 #include <string>
 
 #include "updateConfig.h"
+#include "log.h"
 
 using std::string;
 using std::cout;
@@ -37,8 +38,6 @@ int getSleepTime(int oldTime){
 	int fd = open( "config.txt", O_RDONLY);
 	
 	if( -1 == flock(fd, LOCK_NB | LOCK_EX)){
-		cout << "Have Been Locked" << endl;
-
 		return oldTime;
 	}
 	read(fd, buf, sizeof(int));
@@ -56,23 +55,18 @@ int getSleepTime(int oldTime){
 }
 int updateSleepTime(int newTime){
 	char buf[512];
-
-	cout << "Entry " << endl;
-	cout << "Entry " << endl;
-	cout << "Entry " << endl;
-	cout << "Entry " << endl;
-	cout << "Entry " << endl;
-	cout << "Entry " << endl;
+	
 	int fd = open( "config.txt", O_WRONLY);
 	
 	flock(fd, LOCK_EX);
 
 	sprintf(buf, "%d", newTime);
-cout << " New time " << newTime << endl; 
 	
-int i = 	write(fd, buf, strlen(buf));
+	int i = write(fd, buf, strlen(buf));
 
-cout << "i " << i << " buf " << buf << endl;
+	if (i < 0){
+		mylog("errlog.txt", "updateTime error");
+	}
 
 	flock(fd, LOCK_UN);
 	close(fd);

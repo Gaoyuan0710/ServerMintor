@@ -34,6 +34,7 @@
 
 #include "GetData.h"
 #include "Info.h"
+#include "log.h"
 
 using std::vector;
 using std::ios;
@@ -69,6 +70,8 @@ string GetData::getInfo(int type){
 string GetData::getError(){
 	string errInfo = "{\"Error\":\"No Such Client\"}";
 
+	mylog("errlog.txt", "No such Client");
+
 	return errInfo;
 }
 string GetData::getClientInfo(){
@@ -82,6 +85,11 @@ string GetData::getClientInfo(){
 		switch (flag){
 			case 0:
 				pp = popen("uname -n", "r");
+	
+				if (pp == NULL){
+					mylog("errlog.txt", "popen uname -n error");
+				}
+
 				if (fgets(buffer, sizeof(buffer), pp) != NULL){
 					Info.append("{\"serverName\":\"");
 					Info.append(buffer);
@@ -92,6 +100,10 @@ string GetData::getClientInfo(){
 				flag = 1;
 			case 1:
 				pp = popen("uname -o", "r");
+				if (pp == NULL){
+					mylog("errlog.txt", "popen uname -o error");
+				}
+	
 				if (fgets(buffer, sizeof(buffer), pp) != NULL){
 					Info.append("\"serverOS\":\"");
 					Info.append(buffer);
@@ -102,6 +114,10 @@ string GetData::getClientInfo(){
 				flag = 2;
 			case 2:
 				pp = popen("uname -r", "r");
+				if (pp == NULL){
+					mylog("errlog.txt", "popen uname -r error");
+				}
+				
 				if (fgets(buffer, sizeof(buffer), pp) != NULL){
 					Info.append("\"serverKernel\":\"");
 					Info.append(buffer);
@@ -114,6 +130,10 @@ string GetData::getClientInfo(){
 			case 3:
 				pp = popen("date -d next-day '+%F %T'", "r");
 				
+				if (pp == NULL){
+					mylog("errlog.txt", "popen date error");
+				}
+
 				if (fgets(buffer, sizeof(buffer), pp) != NULL){
 					Info.append("\"serverTime\":\"");
 					Info.append(buffer);
@@ -142,6 +162,10 @@ string GetData::getCpuInfo(){
 
 	pp = popen("cat /proc/cpuinfo |grep name |cut -f2 -d: |uniq -c", "r");
 
+	if (pp == NULL){
+		mylog("errlog.txt", "getCpuInfo error");
+	}
+
 	if (fgets(buffer, sizeof(buffer), pp) != NULL){
 		Info.append("{\"CpuInfo\":\"");
 		Info.append(buffer);
@@ -161,10 +185,12 @@ string GetData::getDiskIO(){
 
 	pp = popen("vmstat |awk 'NR==3{print $9,$10}'", "r");
 
+	if (pp == NULL){
+		mylog("errlog.txt", "getDiskIO error");
+	}
+
+
 	if(fgets(buffer, sizeof(buffer), pp) != NULL){
-//		fgets(buffer, sizeof(buffer), pp);
-//		fgets(buffer, sizeof(buffer), pp); 
-		
 		Info.append("{\"IOInfo\":\"");
 		Info.append(buffer);
 		Info = Info.substr(0, Info.length() - 1);
@@ -175,69 +201,61 @@ string GetData::getDiskIO(){
 	}
 	
 }
+
 string GetData::getCpuRate(){
-	FILE *fp;
+		FILE *pp;
 	char buf[128];
-	char cpu[5];
-	char tmp[256];
 	string Info = "";
-	long  user[5], nice[5], sys[5], idle[5], iowait[5], irq[5], softirq[5];
-	long  all1[5], all2[5];
-	float usage[5];
-	long int tt1[5], tt2[5];
+	string temp = "";
 
-	fp = fopen("/proc/stat", "r");
-	if (fp == NULL){
-		Info.append("{\"Error\":\"No Such Client\"}");
-		return Info;
-	}
-	int i = 0;
-	while (i < 5){
-		fgets(buf, sizeof(buf), fp);
-		sscanf(buf, "%s %ld %ld %ld %ld %ld %ld %ld", cpu, &user[i], &nice[i],
-					&sys[i], &idle[i], &iowait[i], &irq[i], &softirq[i]);
-		all1[i] = user[i] + nice[i] + sys[i] + idle[i] + iowait[i] + irq[i] + softirq[i];
-		tt1[i] = user[i] + sys[i];
-		i++;
-	}
-	sleep(2);
-	fclose(fp);
-
-	fp = fopen("/proc/stat", "r");
-	rewind(fp);
-	i = 0;
-	while (i < 5){
-		fgets(buf, sizeof(buf), fp);
-		sscanf(buf, "%s %ld %ld %ld %ld %ld %ld %ld", cpu, &user[i], &nice[i], &sys[i],
-					&idle[i], &iowait[i], &irq[i], &softirq[i]);
-		all2[i] = user[i] + nice[i] + sys[i] + idle[i] + iowait[i] + irq[i] + softirq[i];
-		tt2[i] = user[i] + sys[i];
-		usage[i] = (((float) (tt2[i] - tt1[i]) )/ (all2[i] - all1[i])) * 100;
-		i++;
-	}
-	i = 0;
-	Info.append("{\"CpuRate\":[");
-	while (i < 5){
-		if (i == 0 ){
-			Info.append("{\"CpuTotal\":\"");
-			sprintf(tmp, "%.2f", usage[i]);
-			Info.append(tmp);
-			Info.append("%\"},");
-			i++;
-			continue;
-		}
-		Info.append("{\"Cpu");
-		sprintf(tmp, "%d", i);
-		Info.append(tmp);
-		Info.append("\":\"");
-		sprintf(tmp, "%.2f", usage[i]);
-		Info.append(tmp);
-		Info.append("%\"},");
-		i++;
-	}
+	Info.append("{\"CpuRate\":{");
+	
+	pp = popen("top -n 1|grep Cpu|awk '{print $2}'", "r");     	
+	fgets(buf, sizeof(buf), pp);
+	Info.append("us:");
+	Info.append(buf);
 	Info = Info.substr(0, Info.length() - 1);
-	Info.append("]}");
-	fclose(fp);
+	Info.append(",");
+	bzero(buf, sizeof(buf));
+	fclose(pp);
+				
+	pp = popen("top -n 1|grep Cpu|awk '{print $4}'", "r");
+	
+	fgets(buf, sizeof(buf), pp);
+	Info.append("sy:");
+	Info.append(buf);
+	Info = Info.substr(0, Info.length() - 1);
+	Info.append(",");
+	bzero(buf, sizeof(buf));
+	fclose(pp);
+
+	pp = popen("top -n 1|grep Cpu|awk '{print $6}'", "r");
+	fgets(buf, sizeof(buf), pp);
+	Info.append("ni:");
+	Info.append(buf);
+	Info = Info.substr(0, Info.length() - 1);
+	Info.append(",");
+	bzero(buf, sizeof(buf));
+	fclose(pp);
+
+	pp = popen("top -n 1|grep Cpu|awk '{print $8}'", "r");
+	fgets(buf, sizeof(buf), pp);
+	Info.append("id:");
+	Info.append(buf);
+	Info = Info.substr(0, Info.length() - 1);
+	Info.append(",");
+	bzero(buf, sizeof(buf));
+	fclose(pp);
+
+	pp = popen("top -n 1|grep Cpu|awk '{print $10}'", "r");
+	fgets(buf, sizeof(buf), pp);
+	Info.append("wa:");
+	Info.append(buf);
+	Info = Info.substr(0, Info.length() - 1);
+	fclose(pp);
+
+	Info.append("}}");
+
 	return Info;
 }
 string GetData::getMemInfo(){
@@ -252,28 +270,24 @@ string GetData::getMemInfo(){
 		Info.append("{\"MemTotal\":\"");
 		sprintf(tmp, "%ld", (long int)sys.totalram / (1024 * 1024));
 		Info.append(tmp);
-//		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"},");
 
 		Info.append("{\"MemFree\":\"");
 		sprintf(tmp, "%ld", (long int)sys.freeram / (1024 * 1024));
 	
 		Info.append(tmp);
-//		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"},");
 
 
 		Info.append("{\"SwapTotal\":\"");
 		sprintf(tmp, "%ld", (long int)sys.totalswap / (1024 * 1024));
 		Info.append(tmp);
-//		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"},");
 
 
 		Info.append("{\"SwapFree\":\"");
 		sprintf(tmp, "%ld", (long int)sys.freeswap / (1024 * 1024));
 		Info.append(tmp);
-//		Info = Info.substr(0, Info.length() - 1);
 		Info.append("\"}");
 		Info.append("]}");
 
@@ -284,7 +298,6 @@ string GetData::getMemInfo(){
 	}
 	return Info;
 }
-
 string GetData::getNetWorkStatus(){
 	char str[256];
 	char tempName[10];
@@ -301,7 +314,6 @@ string GetData::getNetWorkStatus(){
 	reader1.seekg(200, ios::beg);
 
 	while (reader1.getline(str, 128)){
-//		cout << str << endl;
 		bytesRecv = 0;
 		bytesTrans = 0;
 
@@ -321,7 +333,6 @@ string GetData::getNetWorkStatus(){
 	reader2.seekg(200, ios::beg);
 
 	while (reader2.getline(str, 128)){
-	//	cout << str << endl;
 		bytesRecv = 0;
 		bytesTrans = 0;
 
@@ -336,7 +347,6 @@ string GetData::getNetWorkStatus(){
 	char tmp[100];
 	while (i < devName.size()){
 		unsigned long rate = (usefulData2[2 * i] + usefulData2[2 * i + 1] - usefulData1[2 * i] - usefulData1[2 * i + 1])/(1024);
-	//	cout << devName[i] << " " << rate << endl;
 		Info.append("{\"");
 		Info.append(devName[i]);
 		Info.append("\":\"");
@@ -346,7 +356,6 @@ string GetData::getNetWorkStatus(){
 		i++;
 	}
 	Info = Info.substr(0, Info.find_last_of(","));
-//	Info = Info.substr(0, Info.length() - 1);
 	Info.append("]}");
 	reader2.close();
 
@@ -357,16 +366,13 @@ string GetData::getIp(){
 	int intr;
 	struct ifreq buf[16];
 	struct ifconf ifc;
-
-
 	string Info = "{\"Ip\":\"";
-	
-
-
 
 	tmpFd = socket(AF_INET, SOCK_DGRAM, 0);
 
 	if (tmpFd < 0){
+		mylog("errlog.txt", "getIpd socket error");
+
 		return "Wrong Address";
 	}
 
@@ -374,6 +380,8 @@ string GetData::getIp(){
 	ifc.ifc_ifcu.ifcu_buf = (caddr_t) buf;
 
 	if (ioctl(tmpFd, SIOCGIFCONF, (char *)&ifc)){
+		mylog("errlog.txt", "getIp ioctl error");
+
 		return "Wrong Address";
 	}
 	intr = ifc.ifc_len / sizeof(struct ifreq);
@@ -388,7 +396,6 @@ string GetData::getIp(){
 	Info.append("\"}");
 
 	return Info;
-
 }
 
 string GetData::getProSortByCpu(){
@@ -397,24 +404,20 @@ string GetData::getProSortByCpu(){
 	string tempdata = "";
 	char buffer[1024];
 
-	pp = popen("ps auxch | sort -k3 -r | awk 'NR<15{print $1,$2,$3,$4,$8,$11}'", "r");
+	pp = popen("ps auxch | sort -k3 -r | awk 'NR<8{print $1,$2,$3,$4,$8,$11}'", "r");
 
 	while(fgets(buffer, sizeof(buffer), pp) != NULL){
 		tempdata.append(buffer);
 		tempdata = tempdata.substr(0, tempdata.length() - 1);
 		tempdata.append(" ");
 	}
-	
 		
 	Info.append("{\"proInfoSortByCpu\":\"");
-	Info += "gaoyuan 15070 6.1 13.8 Sl+ java gaoyuan 27079 4.4 1.6 Sl chrome gaoyuan 26897 4.0 3.6 Sl chrome root 1135 1.6 0.9 Ss+ X gaoyuan 1704 1.3 2.3 Sl kwin gaoyuan 26942 1.1 3.1 Sl chrome gaoyuan 1743 0.9 11.9 Sl plasma-desktop gaoyuan 7547 0.9 1.0 Sl konsole gaoyuan 27014 0.6 1.7 Sl chrome gaoyuan 885 0.1 2.5 Sl chrome gaoyuan 687 0.1 2.3 Sl chrome gaoyuan 30168 0.1 2.3 Sl+ java gaoyuan 30162 0.1 1.1 Sl+ java gaoyuan 627 0.0 2.1 Sl chrome";
+	Info.append(tempdata);
 	Info = Info.substr(0, Info.length() - 1);
 	Info.append("\"}");
 
 	pclose(pp);
-	
-	//cout << "Info " << Info.size() << endl;
-	
 	return Info;
 	
 }
@@ -424,9 +427,7 @@ string GetData::getProSortByMem(){
 	char buffer[1024];
 	string tempdata = "";
 
-
-//	pp = popen("ps auxch | sort -k4 -r | awk 'NR<10{print $2, $11}'", "r");
-	pp = popen("ps auxch | sort -k4 -r | awk 'NR<5{print $1,$2,$3,$4,$8,$11}'", "r");
+	pp = popen("ps auxch | sort -k4 -r | awk 'NR<8{print $1,$2,$3,$4,$8,$11}'", "r");
 
 	while(fgets(buffer, sizeof(buffer), pp) != NULL){
 		tempdata.append(buffer);
@@ -434,18 +435,13 @@ string GetData::getProSortByMem(){
 		tempdata.append(" ");
 	
 	}
-		
 	Info.append("{\"proInfoSortByMem\":\"");
-	Info += tempdata;
+	Info.append(tempdata);
 	Info = Info.substr(0, Info.length() - 1);
 	Info.append("\"}");
 
 	pclose(pp);
 	
-
-	cout << "Info " << Info.size() << endl;
-
-	//return " ";
 	return Info;
 	
 }
@@ -463,17 +459,12 @@ string GetData::getNetWorkNums(){
 		tempdata.append(" ");
 	}
 		
-		
 	Info.append("{\"NetWorkNums\":\"");
 	Info += tempdata;
 	Info = Info.substr(0, Info.length() - 1);
 	Info.append("\"}");
 
 	pclose(pp);
-
-
-
-	cout << "pppppppppppp   " << Info.size() << endl;
 	return Info;
 	
 }

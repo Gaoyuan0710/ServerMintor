@@ -38,10 +38,11 @@ using std::string;
 
 class sockOperator{
 	public:
-		sockOperator(string dest, string port, int pipeFd){
+		sockOperator(string dest, string port, int pipeFd, int clientId){
 			this->dest = dest;
 			this->port = port;
 			this->pipeFd = pipeFd;
+			this->clientId = clientId;
 		}
 		void socketMain();
 		bool sendInfo(char *info, int len);
@@ -65,6 +66,7 @@ class sockOperator{
 		static const int kEpollEvent = 100;
 		int pipeFd;
 		int epollFd;
+		int clientId;
 		string dest;
 		string port;
 

@@ -14,25 +14,16 @@
 //
 // =====================================================================================
 
+#ifndef MYLOG_H
+#define MYLOG_H
+
 #include <iostream>
 #include <string>
 #include <fstream>
-
-using namespace std;
-using std::cin;
-using std::cout;
-using std::endl;
+#include <stdio.h>
 using std::string;
-using std::fstream;
 
 
-bool mylog(string filename, string err){
-	ofstream outfile;
+bool mylog(string filename, string err);
 
-	outfile.open(filename.c_str(), ios::app | ios::ate);
-	outfile.write(err.c_str(), (streamsize)err.length());
-
-	outfile.close();
-	return true;
-}
-
+#endif

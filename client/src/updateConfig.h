@@ -1,11 +1,11 @@
 // =====================================================================================
 // 
-//       Filename:  collect.h
+//       Filename:  updateConfig.cpp
 //
 //    Description:  
 //
 //        Version:  1.0
-//        Created:  2015年01月14日 16时59分33秒
+//        Created:  2015年02月16日 13时26分02秒
 //       Revision:  none
 //       Compiler:  g++
 //
@@ -14,10 +14,18 @@
 // 
 // =====================================================================================
 
-#include <iostream>
+#ifndef UPDATECONFIG_H
+#define UPDATECONFIG_H
 
-#include "updateConfig.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/file.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
-bool collectConfigureInfo(int fd);
-bool collectMonitor(int fd);
-void collectMain(int fd);
+
+int getSleepTime(int sleepTime);
+int updateSleepTime(int sleepTime);
+
+#endif

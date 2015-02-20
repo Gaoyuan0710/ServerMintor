@@ -20,20 +20,11 @@ public class CollectServerHandler extends ChannelHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msgdata) throws Exception {
         MyPackage.InfoPackage data = (MyPackage.InfoPackage) msgdata;
 
-        System.out.println(data.getInfoTypes());
-        System.out.println(InfoType.getInfoType(data.getInfoTypes()));
-        System.out.println(data.getInfoLen());
-        System.out.println(data.getInfoData());
-
-        String message = "I get your message";
-        System.out.println(message);
-
-    //   ctx.write(Unpooled.copiedBuffer(message, CharsetUtil.UTF_8));
-    //    ctx.flush();
         try {
-           AnalyticalToJson.StringAnalyticalToJson(data.getInfoTypes(), data.getInfoData());
+            AnalyticalToJson.StringAnalyticalToJson(data.getInfoTypes(), data.getInfoData());
         } catch (Exception e) {
             e.printStackTrace();
+            ErrorLog.writeToFile(e.toString());
         }
     }
 

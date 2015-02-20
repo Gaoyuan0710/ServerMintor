@@ -52,9 +52,7 @@ public class StoreToDatabase {
         connection = getConnection();
         Statement dbStatue = connection.createStatement();
 
-    //    dbStatue.execute(sql);
 
-        System.out.println(sql);
         ResultSet resultSet = dbStatue.executeQuery(sql);
 
         resultInfo = "{\"result\":";
@@ -133,7 +131,6 @@ public class StoreToDatabase {
         dbStatue.execute(sql);
         connection.close();
 
-        //  String sql = "UPDATE clientList SET `Name`='yuan', `CpuInfo`='is' WHERE `ID`='1'";
 
     }
     public static String findBaseInfo(int id) throws SQLException {
@@ -179,9 +176,6 @@ public class StoreToDatabase {
         connection = getConnection();
         Statement dbStatue = connection.createStatement();
 
-        //    dbStatue.execute(sql);
-
-        System.out.println(sql);
 
         ResultSet resultSet = dbStatue.executeQuery(sql);
 
@@ -232,12 +226,7 @@ public class StoreToDatabase {
         resultInfo += result;
         resultInfo += "]}";
 
-
-
         connection.close();
-
-        System.out.println("SSSSSSSSSSSSSS");
-        System.out.println(resultInfo);
         return resultInfo;
 
     }
@@ -259,10 +248,6 @@ public class StoreToDatabase {
 
         connection = getConnection();
         Statement dbStatue = connection.createStatement();
-
-        //    dbStatue.execute(sql);
-
-        System.out.println(sql);
 
         ResultSet resultSet = dbStatue.executeQuery(sql);
 
@@ -315,10 +300,6 @@ public class StoreToDatabase {
         connection = getConnection();
         Statement dbStatue = connection.createStatement();
 
-        //    dbStatue.execute(sql);
-
-        System.out.println(sql);
-
         ResultSet resultSet = dbStatue.executeQuery(sql);
 
         resultInfo = "{\"result\":{";
@@ -352,4 +333,41 @@ public class StoreToDatabase {
 
     }
 
+    public static String findCpuRate(String info, String table, int clientID) throws SQLException {
+        String resultInfo = "";
+
+        String sql = "select ";
+        sql += info;
+        sql += " from ";
+        sql += table;
+
+        if (!(clientID == 0)) {
+            sql += " where clientID = ";
+            sql += clientID;
+        }
+        sql += " order by CurrentTime desc limit 0, 5";
+
+
+        connection = getConnection();
+        Statement dbStatue = connection.createStatement();
+
+        ResultSet resultSet = dbStatue.executeQuery(sql);
+
+        resultInfo = "{\"result\":[";
+
+        String temp = "";
+
+        while (resultSet.next()){
+            temp += resultSet.getString(info);
+            temp += ",";
+        }
+        temp = temp.substring(0, temp.length() - 1);
+        resultInfo += temp;
+        resultInfo += "]}";
+        connection.close();
+        System.out.println(resultInfo);
+
+        return resultInfo;
+
+    }
 }
