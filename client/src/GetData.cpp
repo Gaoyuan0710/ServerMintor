@@ -30,7 +30,9 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "GetData.h"
 #include "Info.h"
@@ -201,7 +203,7 @@ string GetData::getDiskIO(){
 	}
 	
 }
-
+/*
 string GetData::getCpuRate(){
 		FILE *pp;
 	char buf[128];
@@ -256,8 +258,83 @@ string GetData::getCpuRate(){
 
 	Info.append("}}");
 
+	std::cout << Info << std::endl;
 	return Info;
 }
+
+*/
+
+
+string GetData::getCpuRate(){
+	FILE *fp;
+	char buf[128];
+	char cpu[5];
+	char tmp[256];
+	string Info = "";
+	long  user[5], nice[5], sys[5], idle[5], iowait[5], irq[5], softirq[5];
+	long  all1[5], all2[5];
+	float usage[5];
+	long int tt1[5], tt2[5];
+
+	fp = fopen("/proc/stat", "r");
+	if (fp == NULL){
+		Info.append("{\"Error\":\"No Such Client\"}");
+		return Info;
+	}
+	int i = 0;
+	while (i < 5){
+		fgets(buf, sizeof(buf), fp);
+		sscanf(buf, "%s %ld %ld %ld %ld %ld %ld %ld", cpu, &user[i], &nice[i],
+					&sys[i], &idle[i], &iowait[i], &irq[i], &softirq[i]);
+		all1[i] = user[i] + nice[i] + sys[i] + idle[i] + iowait[i] + irq[i] + softirq[i];
+		tt1[i] = user[i] + sys[i];
+		i++;
+	}
+	sleep(2);
+	fclose(fp);
+
+	fp = fopen("/proc/stat", "r");
+	rewind(fp);
+	i = 0;
+	while (i < 5){
+		fgets(buf, sizeof(buf), fp);
+		sscanf(buf, "%s %ld %ld %ld %ld %ld %ld %ld", cpu, &user[i], &nice[i], &sys[i],
+					&idle[i], &iowait[i], &irq[i], &softirq[i]);
+		all2[i] = user[i] + nice[i] + sys[i] + idle[i] + iowait[i] + irq[i] + softirq[i];
+		tt2[i] = user[i] + sys[i];
+		usage[i] = (((float) (tt2[i] - tt1[i]) )/ (all2[i] - all1[i])) * 100;
+		i++;
+	}
+	i = 0;
+	Info.append("{\"CpuRate\":[");
+	while (i < 1){
+		if (i == 0 ){
+			Info.append("{\"CpuTotal\":\"");
+			sprintf(tmp, "%.2f", usage[i]);
+			Info.append(tmp);
+			Info.append("%\"},");
+			i++;
+			continue;
+		}
+		Info.append("{\"Cpu");
+		sprintf(tmp, "%d", i);
+		Info.append(tmp);
+		Info.append("\":\"");
+		sprintf(tmp, "%.2f", usage[i]);
+		Info.append(tmp);
+		Info.append("%\"},");
+		i++;
+	}
+	Info = Info.substr(0, Info.length() - 1);
+	Info.append("]}");
+	fclose(fp);
+
+	cout << Info << endl;
+
+	return Info;
+}
+
+
 string GetData::getMemInfo(){
 	string Info = "";
 	struct sysinfo sys;
