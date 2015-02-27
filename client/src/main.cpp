@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 	}
 	else if (pid > 0){
 		close(fd[1]);
-		sockOperator mysocket("127.0.0.1", "8089", fd[0], clientId);
+		sockOperator mysocket("121.40.90.167", "8089", fd[0], clientId);
 		mysocket.socketMain();
 	}
 	else {
