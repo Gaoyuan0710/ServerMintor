@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ThemeBucket">
+    <link rel="shortcut icon" href="images/favicon.png">
+
+    <title>关于</title>
+
+    <!--Core CSS -->
+    <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-reset.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/style-responsive.css" rel="stylesheet" />
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]>
+    <script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<section id="container" >
+<!--header start-->
+<header class="header fixed-top clearfix">
+<!--logo start-->
+<div class="brand">
+
+    <a href="#" class="logo">
+        <i class="fa fa-dashboard"></i>
+    </a>
+    <div class="sidebar-toggle-box">
+        <div class="fa fa-bars"></div>
+    </div>
+</div>
+<!--logo end-->
+<div class="app-name">服务器实时监控系统</div>
+</header>
+<!--header end-->
+<aside>
+    <div id="sidebar" class="nav-collapse">
+        <!-- sidebar menu start-->
+        <div class="leftside-navigation">
+            <ul class="sidebar-menu" id="nav-accordion">
+                <li>
+                    <a href="index.html" class="active">
+                        <i class="fa fa-home"></i>
+                        <span>系统首页</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="list.html">
+                        <i class="fa fa-th-list"></i>
+                        <span>机器列表</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="about.html">
+                        <i class="fa fa-user"></i>
+                        <span>关于我们</span>
+                    </a>
+                </li>
+
+            </ul></div>
+        <!-- sidebar menu end-->
+    </div>
+</aside>
+<!--sidebar end-->
+    <!--main content start-->
+    <section id="main-content">
+        <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="breadcrumbs-alt"  id="menu-toggle-view" >
+                    <li>
+                        <a href="index.html">首页</a>
+                    </li>
+                    <li>
+                        <a href="#" class="active-trail active current">关于</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <section class="well  about-panel">
+            <header>关于我们</header>
+            <section class="content">
+                <p>安静的程序员</p>
+                <p>Linux Lover</p>
+            </section>
+        </section>
+
+        <!-- page end-->
+        </section>
+    </section>
+    <!--main content end-->
+
+</section>
+
+<!-- Placed js at the end of the document so the pages load faster -->
+
+<!--Core js-->
+<script src="js/jquery.js"></script>
+<script src="bs3/js/bootstrap.min.js"></script>
+<script class="include" type="text/javascript" src="js/jquery.dcjqaccordion.2.7.js"></script>
+<script src="js/jquery.nicescroll.js"></script>
+
+<!--common script init for all pages-->
+<script src="js/scripts.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        function set_size() {
+            var window_height = $(window).height();
+            var panel_top = $('.about-panel').offset().top;
+            var panel_height = window_height - panel_top - 35;
+            $('.about-panel').css('min-height', panel_height + 'px');
+        }
+
+        $(window).on('resize', function(){ set_size(); });
+        set_size();
+    });
+</script>
+</body>
+</html>

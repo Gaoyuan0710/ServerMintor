@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ThemeBucket">
+    <link rel="shortcut icon" href="images/favicon.png">
+
+    <title>详细信息</title>
+
+    <!--Core CSS -->
+    <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-reset.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/style-responsive.css" rel="stylesheet" />
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]>
+    <script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<section id="container" >
+<!--header start-->
+<header class="header fixed-top clearfix">
+<!--logo start-->
+<div class="brand">
+
+    <a href="index.html" class="logo">
+        <i class="fa fa-dashboard"></i>
+    </a>
+    <div class="sidebar-toggle-box">
+        <div class="fa fa-bars"></div>
+    </div>
+</div>
+<!--logo end-->
+<div class="app-name">服务器实时监控系统</div>
+</header>
+<!--header end-->
+<aside>
+    <div id="sidebar" class="nav-collapse">
+        <!-- sidebar menu start-->
+        <div class="leftside-navigation">
+            <ul class="sidebar-menu" id="nav-accordion">
+                <li>
+                    <a href="index.html">
+                        <i class="fa fa-dashboard"></i>
+                        <span>系统首页</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="list.html">
+                        <i class="fa fa-dashboard"></i>
+                        <span>机器列表</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="about.html">
+                        <i class="fa fa-dashboard"></i>
+                        <span>关于我们</span>
+                    </a>
+                </li>
+
+        </ul></div>
+<!-- sidebar menu end-->
+    </div>
+</aside>
+<!--sidebar end-->
+    <!--main content start-->
+    <section id="main-content">
+        <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-md-10">
+                <ul class="breadcrumbs-alt"  id="menu-toggle-view" >
+                    <li>
+                        <a href="index.html">首页</a>
+                    </li>
+                    <li>
+                        <a class="active-trail active current" href="#">详细信息</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-1">
+                <a href="#" class="btn btn-primary btn-block">重启</a>
+            </div>
+            <div class="col-md-1">
+                <a href="#" class="btn btn-danger btn-block">关机</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <section class="panel info-panel">
+                    <header class="panel-heading">
+                        基本信息
+                    </header>
+                    <div class="panel-body chart-panel-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="event-list server-base-info">
+                                    <li>主机编号：<span class="server-id">0</span></li>
+                                    <li>主机名称：<span class="server-name">unknown</span> </li>
+                                    <li>内核版本：<span class="server-kernel">0</span> </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="event-list server-base-info">
+                                    <li>操作系统：<span class="server-os">unknown</span> </li>
+                                    <li>启动时间：<span class="server-start-time">unknown</span> </li>
+                                    <li>主机IP：<span class="server-ip">0.0.0.0</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-3">
+                <section class="panel state-panel">
+                    <header class="panel-heading">
+                        CPU占用率
+                    </header>
+                    <div class="panel-body chart-panel-body">
+                        <canvas class="cpu-info-chart"></canvas>
+                        <div class="cpu-status-info status-info">0%</div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-3">
+                <section class="panel state-panel">
+                    <header class="panel-heading">
+                        内存占用率
+                    </header>
+                    <div class="panel-body chart-panel-body">
+                        <canvas class="mem-info-chart"></canvas>
+                        <div class="mem-status-info status-info">0%</div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <section class="panel history-panel">
+                    <header class="panel-heading">
+                        I/O占用率
+                    </header>
+                    <div class="panel-body">
+                        <canvas class="disk-info-chart"></canvas>
+                    </div>
+                </section>
+            </div>
+            <div class="col-md-6">
+                <section class="panel history-panel">
+                    <header class="panel-heading">
+                        网络速度
+                    </header>
+                    <div class="panel-body">
+                        <canvas class="network-info-chart"></canvas>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel history-panel">
+                    <header class="panel-heading">
+                        历史CPU占用率
+                    </header>
+                    <div class="panel-body">
+                        <canvas class="cpu-history-info"></canvas>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel history-panel">
+                    <header class="panel-heading">
+                        历史内存占用率
+                    </header>
+                    <div class="panel-body">
+                        <canvas class="mem-history-info"></canvas>
+                    </div>
+                </section>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <section class="panel history-panel">
+                    <header class="panel-heading">
+                        历史磁盘占用率
+                    </header>
+                    <div class="panel-body">
+                        <canvas class="disk-history-info"></canvas>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- page end-->
+        </section>
+    </section>
+    <!--main content end-->
+</section>
+
+<!-- Placed js at the end of the document so the pages load faster -->
+
+<!--Core js-->
+<script src="js/jquery.js"></script>
+<script src="bs3/js/bootstrap.min.js"></script>
+<script class="include" type="text/javascript" src="js/jquery.dcjqaccordion.2.7.js"></script>
+<script src="js/jquery.nicescroll.js"></script>
+
+<!--common script init for all pages-->
+<script src="js/scripts.js"></script>
+
+<!--Chart JS-->
+<script src="js/chart-js/Chart.min.js"></script>
+<script src="js/chart-js.init.js"></script>
+
+<script type="text/javascript">
+(function () {
+    var cpuInfoChart;
+    var memInfoChart;
+    var diskInfoChart;
+    var serverId = getCookie("serverId");
+
+    var chartInitData = [
+        {
+            value: 0,
+            color:"#F7464A",
+            highlight: "#FF5A5E",
+            label: "Red"
+        },
+        {
+            value: 100,
+            color: '#1FB5AD',
+            highlight: "#5AD3D1",
+            label: "Grey"
+        }
+    ]
+    var DoughnutOptions = {
+        animationEasing : "easeOutBounce",
+        animateRotate : false,
+        legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+    };
+
+    var ctx = $(".cpu-info-chart").get(0).getContext("2d");
+    cpuInfoChart = new Chart(ctx).Doughnut(chartInitData, DoughnutOptions);
+    ctx = $(".mem-info-chart").get(0).getContext("2d");
+    memInfoChart = new Chart(ctx).Doughnut(chartInitData, DoughnutOptions);
+
+    function updateBaseInfo() {
+        $.get("http://121.40.90.167:8080/?serverId=" + serverId + "&action=getBaseInfo", function (data) {
+            var result = JSON.parse(data);
+            var baseInfo = result[0];
+            $('.server-base-info .server-id').html(serverId);
+            $('.server-base-info .server-name').html(baseInfo.serverName);
+            $('.server-base-info .server-kernel').html(baseInfo.serverKernel);
+            $('.server-base-info .server-os').html(baseInfo.serverOS);
+            $('.server-base-info .server-start-time').html(baseInfo.serverTime);
+            $('.server-base-info .server-ip').html(baseInfo.serverIP);
+        });
+        $.get("http://121.40.90.167:8080/?serverId=" + serverId + "&action=getIp", function (data) {
+            var result = JSON.parse(data);
+            var baseInfo = result[0];
+            $('.server-base-info .server-ip').html(baseInfo.result);
+        });
+    }
+
+    function updateDoughnutData() {
+        $.get("http://121.40.90.167:8080/?serverId=" + serverId + "&action=getCpuRate", function(data) {
+            var result = JSON.parse(data);
+            var cpuInfo = result[0].result[0][0];
+            var cpuUsed = parseInt(cpuInfo.CpuTotal);
+            var cpuTotal = 100;
+            var cpuPercent = cpuUsed * 100 / cpuTotal;
+
+            cpuInfoChart.segments[0].value = cpuUsed;
+            cpuInfoChart.segments[1].value = cpuTotal - cpuUsed;
+            cpuInfoChart.update();
+            $('.cpu-status-info').html(cpuPercent.toFixed(0) + '%');
+        });
+        $.get("http://121.40.90.167:8080/?serverId=" + serverId + "&action=getMemInfo", function(data) {
+            console.log(serverId);
+            console.log(data);
+            var result = JSON.parse(data);
+            var memInfo = result[0].result[0];
+            var memTotal = parseInt(memInfo[0].MemTotal);
+            var memFree = parseInt(memInfo[1].MemFree);
+            var percent = (memTotal - memFree) * 100 / memTotal;
+
+            memInfoChart.segments[0].value = memTotal - memFree;
+            memInfoChart.segments[1].value = memFree;
+            memInfoChart.update();
+            $('.mem-status-info').html(percent.toFixed(0) + '%');
+        });
+    }
+
+    $(document).ready(function() {
+        updateBaseInfo();
+        updateDoughnutData() 
+    });
+
+})();
+</script>
+
+</body>
+</html>
