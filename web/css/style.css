@@ -5704,11 +5704,16 @@ right: -1px;
 .list-table tr {
     cursor: pointer;
 }
-.list-table tr:first-child {
+.list-table tbody tr:first-child {
 	display: none;
+}
+.list-table tbody tr td {
+    height: 40px;
+    line-height: 40px;
 }
 .about-panel {
     text-align: center;
+    background-color: #fff;
 }
 
 .about-panel header {
@@ -5733,11 +5738,7 @@ right: -1px;
     text-align: center;
     border-top: 1px solid #5AD3D1;
 }
-
-.process-table tbody tr td {
-    height: 40px;
-    line-height: 40px;
-}
-.process-table tbody tr:first-child {
-    display: none;
+.about-panel .content a {
+    text-decoration: none;
+    color: #1fb5ac;
 }
