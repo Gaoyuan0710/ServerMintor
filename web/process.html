@@ -55,7 +55,7 @@
         <div class="leftside-navigation">
             <ul class="sidebar-menu" id="nav-accordion">
                 <li>
-                    <a href="index.html" class="active">
+                    <a href="index.html">
                         <i class="fa fa-home"></i>
                         <span>系统首页</span>
                     </a>
@@ -99,7 +99,7 @@
                 进程列表
             </header>
             <div class="panel-body">
-                <table class="table table-responsive process-table">
+                <table class="table table-responsive list-table">
                     <thead>
 	                    <tr>
 		                    <th>User</th>
@@ -146,35 +146,28 @@
     $(document).ready(function() {
         (function () {
         	var serverId = getCookie("serverId");
-
-            $('.list-table tr').click(function () {
-                var tds = $(this).children('td');
-                var serverId = tds[0].innerHTML;
-                setCookie('serverId', serverId);
-                location.href = "info.html";
-            });
             
             $.get('http://121.40.90.167:8080/?action=getPidsSortByCpu&serverId=' + serverId, function(data) {
             	var result = JSON.parse(data);
             	var processArray = result[0]['result'];
             	console.log(processArray[0]);
             	for (var i = 0, len = processArray.length; i < len; i++) {
-	            	var serverItem = $('.process-table tbody tr').first().clone(true);
+	            	var serverItem = $('.list-table tbody tr').first().clone(true);
 	            	serverItem.find('.user').html(processArray[i].user);
 	            	serverItem.find('.pid').html(processArray[i].Pid);
 	            	serverItem.find('.cpu').html(processArray[i]["%Cpu"] + "%");
 	            	serverItem.find('.mem').html(processArray[i]["%Mem"] + "%");
 	            	serverItem.find('.stat').html(processArray[i].Stat);
 	            	serverItem.find('.cmd').html(processArray[i].Command);
-	            	$('.process-table tbody').append(serverItem);
+	            	$('.list-table tbody').append(serverItem);
             	}
             });
         })();
         function set_size() {
             var window_height = $(window).height();
-            var panel_top = $('.process-panel').offset().top;
+            var panel_top = $('.list-panel').offset().top;
             var panel_height = window_height - panel_top - 35;
-            $('.process-panel').css('min-height', panel_height + 'px');
+            $('.list-panel').css('min-height', panel_height + 'px');
         }
 
         $(window).on('resize', function(){ set_size(); });
