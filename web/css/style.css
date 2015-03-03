@@ -5734,4 +5734,10 @@ right: -1px;
     border-top: 1px solid #5AD3D1;
 }
 
-#
+.process-table tbody tr td {
+    height: 40px;
+    line-height: 40px;
+}
+.process-table tbody tr:first-child {
+    display: none;
+}

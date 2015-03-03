@@ -89,18 +89,18 @@
                         <a href="index.html">首页</a>
                     </li>
                     <li>
-                        <a class="active-trail active current" href="#">机器列表</a>
+                        <a class="active-trail active current" href="#">进程信息</a>
                     </li>
                 </ul>
             </div>
         </div>
         <section class="panel list-panel">
             <header class="panel-heading">
-                机器列表
+                进程列表
             </header>
             <div class="panel-body">
-                <table class="table table-responsive list-table">
-                    <thead class="height: 100px;">
+                <table class="table table-responsive process-table">
+                    <thead>
 	                    <tr>
 		                    <th>User</th>
 		                    <th>PID</th>
@@ -145,6 +145,8 @@
 <script type="text/javascript">
     $(document).ready(function() {
         (function () {
+        	var serverId = getCookie("serverId");
+
             $('.list-table tr').click(function () {
                 var tds = $(this).children('td');
                 var serverId = tds[0].innerHTML;
@@ -152,27 +154,27 @@
                 location.href = "info.html";
             });
             
-            $.get('http://121.40.90.167:8080/?action=getPidsSortByCpu&serverId=2', function(data) {
+            $.get('http://121.40.90.167:8080/?action=getPidsSortByCpu&serverId=' + serverId, function(data) {
             	var result = JSON.parse(data);
             	var processArray = result[0]['result'];
             	console.log(processArray[0]);
             	for (var i = 0, len = processArray.length; i < len; i++) {
-	            	var serverItem = $('.list-table tbody tr').first().clone(true);
+	            	var serverItem = $('.process-table tbody tr').first().clone(true);
 	            	serverItem.find('.user').html(processArray[i].user);
 	            	serverItem.find('.pid').html(processArray[i].Pid);
 	            	serverItem.find('.cpu').html(processArray[i]["%Cpu"] + "%");
 	            	serverItem.find('.mem').html(processArray[i]["%Mem"] + "%");
 	            	serverItem.find('.stat').html(processArray[i].Stat);
 	            	serverItem.find('.cmd').html(processArray[i].Command);
-	            	$('.list-table tbody').append(serverItem);
+	            	$('.process-table tbody').append(serverItem);
             	}
             });
         })();
         function set_size() {
             var window_height = $(window).height();
-            var panel_top = $('.list-panel').offset().top;
+            var panel_top = $('.process-panel').offset().top;
             var panel_height = window_height - panel_top - 35;
-            $('.list-panel').css('min-height', panel_height + 'px');
+            $('.process-panel').css('min-height', panel_height + 'px');
         }
 
         $(window).on('resize', function(){ set_size(); });
