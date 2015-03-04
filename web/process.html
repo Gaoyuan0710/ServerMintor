@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ThemeBucket">
+    <link rel="shortcut icon" href="images/favicon.png">
+
+    <title>机器列表</title>
+
+    <!--Core CSS -->
+    <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-reset.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/style-responsive.css" rel="stylesheet" />
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]>
+    <script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<section id="container" >
+<!--header start-->
+<header class="header fixed-top clearfix">
+<!--logo start-->
+<div class="brand">
+
+    <a href="index.html" class="logo">
+        <i class="fa fa-dashboard"></i>
+    </a>
+    <div class="sidebar-toggle-box">
+        <div class="fa fa-bars"></div>
+    </div>
+</div>
+<!--logo end-->
+<div class="app-name">服务器实时监控系统</div>
+</header>
+<!--header end-->
+<aside>
+    <div id="sidebar" class="nav-collapse">
+        <!-- sidebar menu start-->
+        <div class="leftside-navigation">
+            <ul class="sidebar-menu" id="nav-accordion">
+                <li>
+                    <a href="index.html">
+                        <i class="fa fa-th-list"></i>
+                        <span>机器列表</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="about.html">
+                        <i class="fa fa-user"></i>
+                        <span>关于我们</span>
+                    </a>
+                </li>
+
+            </ul></div>
+        <!-- sidebar menu end-->
+    </div>
+</aside>
+<!--sidebar end-->
+    <!--main content start-->
+    <section id="main-content">
+        <section class="wrapper">
+        <!-- page start-->
+        <div class="row">
+            <div class="col-md-3">
+                <ul class="breadcrumbs-alt"  id="menu-toggle-view" >
+                    <li>
+                        <a href="index.html">首页</a>
+                    </li>
+                    <li>
+                        <a class="active-trail active current" href="#">进程信息</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-2">
+            	<select id="sortParam" class="form-control">
+            		<option value="Cpu">按Cpu排序</option>
+            		<option value="Mem">按Mem排序</option>
+            	</select>
+            </div>
+        </div>
+        <section class="panel list-panel">
+            <header class="panel-heading">
+                进程列表
+            </header>
+            <div class="panel-body">
+                <table class="table table-responsive list-table">
+                    <thead>
+	                    <tr>
+		                    <th>User</th>
+		                    <th>PID</th>
+		                    <th>Cpu</th>
+		                    <th>Mem</th>
+		                    <th>Stat</th>
+		                    <th>Cmd</th>
+		                    <th>Op</th>
+	                    </tr>
+                    <tbody>
+                        <tr>
+                            <td class="user"></td>
+                            <td class="pid"></td>
+                            <td class="cpu"></td>
+                            <td class="mem"></td>
+                            <td class="stat"></td>
+                            <td class="cmd"></td>
+                            <td><a href="#" class="btn btn-danger">Kill</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- page end-->
+        </section>
+    </section>
+    <!--main content end-->
+
+</section>
+
+<!-- Placed js at the end of the document so the pages load faster -->
+
+<!--Core js-->
+<script src="js/jquery.js"></script>
+<script src="bs3/js/bootstrap.min.js"></script>
+<script class="include" type="text/javascript" src="js/jquery.dcjqaccordion.2.7.js"></script>
+<script src="js/jquery.nicescroll.js"></script>
+
+<!--common script init for all pages-->
+<script src="js/scripts.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        function updatePidsSortBy (sortParam) {
+        	var serverId = getCookie("serverId");
+            
+            $.get('http://121.40.90.167:8080/?action=getPidsSortBy' + sortParam + '&serverId=' + serverId, function(data) {
+            	var result = JSON.parse(data);
+            	var processArray = result[0]['result'];
+            	console.log(processArray[0]);
+	            
+	            var itemPattern = $('.list-table tbody tr').first().clone(true);
+	            $('.list-table tbody').html("");
+            	for (var i = 0, len = processArray.length; i < len; i++) {
+	            	var tableItem = itemPattern.clone(true);
+	            	tableItem.find('.user').html(processArray[i].user);
+	            	tableItem.find('.pid').html(processArray[i].Pid);
+	            	tableItem.find('.cpu').html(processArray[i]["%Cpu"] + "%");
+	            	tableItem.find('.mem').html(processArray[i]["%Mem"] + "%");
+	            	tableItem.find('.stat').html(processArray[i].Stat);
+	            	tableItem.find('.cmd').html(processArray[i].Command);
+	            	$('.list-table tbody').append(tableItem);
+            	}
+            });
+        };
+
+        updatePidsSortBy("Cpu");
+
+        $("#sortParam").change(function() {
+        	var param = $(this).val();
+        	updatePidsSortBy(param);
+        });
+
+        function set_size() {
+            var window_height = $(window).height();
+            var panel_top = $('.list-panel').offset().top;
+            var panel_height = window_height - panel_top - 35;
+            $('.list-panel').css('min-height', panel_height + 'px');
+        }
+
+        $(window).on('resize', function(){ set_size(); });
+        set_size();
+    });
+</script>
+</body>
+</html>
