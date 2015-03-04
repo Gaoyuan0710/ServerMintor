@@ -56,19 +56,13 @@
             <ul class="sidebar-menu" id="nav-accordion">
                 <li>
                     <a href="index.html">
-                        <i class="fa fa-dashboard"></i>
-                        <span>系统首页</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="list.html">
-                        <i class="fa fa-dashboard"></i>
+                        <i class="fa fa-th-list"></i>
                         <span>机器列表</span>
                     </a>
                 </li>
                 <li>
                     <a href="about.html">
-                        <i class="fa fa-dashboard"></i>
+                        <i class="fa fa-user"></i>
                         <span>关于我们</span>
                     </a>
                 </li>
@@ -166,7 +160,7 @@
             <div class="col-md-6">
                 <section class="panel history-panel">
                     <header class="panel-heading">
-                        网络速度
+                        网络速度 <span class="network-state"></span>
                     </header>
                     <div class="panel-body">
                         <canvas class="network-info-chart"></canvas>
@@ -176,7 +170,7 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-md-6">
                 <section class="panel history-panel">
                     <header class="panel-heading">
                         历史CPU占用率
@@ -186,27 +180,13 @@
                     </div>
                 </section>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
+            <div class="col-md-6">
                 <section class="panel history-panel">
                     <header class="panel-heading">
                         历史内存占用率
                     </header>
                     <div class="panel-body">
                         <canvas class="mem-history-info"></canvas>
-                    </div>
-                </section>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <section class="panel history-panel">
-                    <header class="panel-heading">
-                        历史磁盘占用率
-                    </header>
-                    <div class="panel-body">
-                        <canvas class="disk-history-info"></canvas>
                     </div>
                 </section>
             </div>
@@ -231,14 +211,14 @@
 
 <!--Chart JS-->
 <script src="js/chart-js/Chart.min.js"></script>
-<script src="js/chart-js.init.js"></script>
 
 <script type="text/javascript">
+
+var serverId = getCookie("serverId");
+//
 (function () {
     var cpuInfoChart;
     var memInfoChart;
-    var diskInfoChart;
-    var serverId = getCookie("serverId");
 
     var chartInitData = [
         {
@@ -297,8 +277,6 @@
             $('.cpu-status-info').html(cpuPercent.toFixed(0) + '%');
         });
         $.get("http://121.40.90.167:8080/?serverId=" + serverId + "&action=getMemInfo", function(data) {
-            console.log(serverId);
-            console.log(data);
             var result = JSON.parse(data);
             var memInfo = result[0].result[0];
             var memTotal = parseInt(memInfo[0].MemTotal);
@@ -314,9 +292,347 @@
 
     $(document).ready(function() {
         updateBaseInfo();
-        updateDoughnutData() 
+        updateDoughnutData();
     });
 
+})();
+
+//disk I/O info chart
+(function () {
+    var t,
+        chartObj,
+        canvasElem = $('.disk-info-chart'),
+        chartData = {
+            labels: ["8min", "6min", "4min", "2min", "0"],
+            datasets: [
+                {
+                    label: 'I/O Input',
+                    fillColor: 'rgba(0,0,0,0)',
+                    strokeColor: '#FF5A5E',
+                    pointColor: '#FF5A5E',
+                    pointStrokeColor: '#fff',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: '#FF5A5E',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                    label: 'I/O Output',
+                    fillColor: 'rgba(0,0,0,0)',
+                    strokeColor: '#1FB5AD',
+                    pointColor: '#1FB5AD',
+                    pointStrokeColor: '#fff',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: '#1FB5AD',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+            ]
+        },
+        chartOptions = {
+            pointDotRadius : 4,
+            pointDotStrokeWidth : 2,
+            pointHitDetectionRadius : 8,
+            scaleLineWidth:1
+        };
+
+    function resizeChart(animate){
+        if (animate == undefined){
+            animate = false;
+        }
+        clearTimeout(t);
+        t = setTimeout(function(){
+            canvasElem.attr({
+                "width":canvasElem.parent().width(),
+                "height":canvasElem.parent().height()
+            });
+            redrawChart(animate);
+        }, 30);
+    }
+
+    function redrawChart(animation) {
+        if (!animation) {
+            chartOptions.animation = false;
+        } else {
+            chartOptions.animation = true;
+        }
+        var ctx = canvasElem.get(0).getContext("2d");
+        chartObj = new Chart(ctx).Line(chartData, chartOptions);
+    }
+
+    function InitChart() {
+        $.get("http://121.40.90.167:8080/?serverId=" + serverId + "&action=getDiskIO", function(data) {
+            var result = JSON.parse(data);
+            var diskInfo = result[0].result;
+            for (var i = 0, len = diskInfo.length; i < len; i++) {
+                chartData.datasets[0].data[i] = parseInt(diskInfo[i].Input);
+                chartData.datasets[1].data[i] = parseInt(diskInfo[i].Output);
+            }
+
+            resizeChart(false);
+            $(window).on('resize', function(){ resizeChart(false); });
+        });
+    }
+
+    $(document).ready(function() {
+        InitChart();
+    });
+})();
+
+//network info chart
+(function () {
+    var t,
+        chartObj,
+        canvasElem = $('.network-info-chart'),
+        chartData = {
+            labels: ["8min", "6min", "4min", "2min", "0"],
+            datasets: [
+                {
+                    label: 'lo',
+                    fillColor: 'rgba(0,0,0,0)',
+                    strokeColor: '#272822',
+                    pointColor: '#272822',
+                    pointStrokeColor: '#fff',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: '#272822',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                    label: 'eth0',
+                    fillColor: 'rgba(0,0,0,0)',
+                    strokeColor: '#FF5A5E',
+                    pointColor: '#FF5A5E',
+                    pointStrokeColor: '#fff',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: '#FF5A5E',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                    label: 'eth1',
+                    fillColor: 'rgba(0,0,0,0)',
+                    strokeColor: '#1FB5AD',
+                    pointColor: '#1FB5AD',
+                    pointStrokeColor: '#fff',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: '#1FB5AD',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+            ]
+        },
+        chartOptions = {
+            pointDotRadius : 4,
+            pointDotStrokeWidth : 2,
+            pointHitDetectionRadius : 8,
+            scaleLineWidth:1
+        };
+
+    function resizeChart(animate){
+        if (animate == undefined){
+            animate = false;
+        }
+        clearTimeout(t);
+        t = setTimeout(function(){
+            canvasElem.attr({
+                "width":canvasElem.parent().width(),
+                "height":canvasElem.parent().height()
+            });
+            redrawChart(animate);
+        }, 30);
+    }
+
+    function redrawChart(animation) {
+        if (!animation) {
+            chartOptions.animation = false;
+        } else {
+            chartOptions.animation = true;
+        }
+        var ctx = canvasElem.get(0).getContext("2d");
+        chartObj = new Chart(ctx).Line(chartData, chartOptions);
+    }
+
+    function initChart() {
+        $.get("http://121.40.90.167:8080/?serverId=" + serverId + "&action=getNetWorkInfo", function(data) {
+            var result = JSON.parse(data);
+            var networkInfo = result[0].result;
+            for (var i = 0, len = networkInfo.length; i < len; i++) {
+                chartData.datasets[0].data[i] = parseInt(networkInfo[i][0]["lo:"]);
+                chartData.datasets[1].data[i] = parseInt(networkInfo[i][2]["eth0:"]);
+                chartData.datasets[2].data[i] = parseInt(networkInfo[i][1]["eth1:"]);
+            }
+
+            resizeChart(false);
+            $(window).on('resize', function(){ resizeChart(false); });
+        });
+        $.get("http://121.40.90.167:8080/?serverId=" + serverId + "&action=getNetWorkNums", function(data) {
+            var result = JSON.parse(data);
+            var networkState = result[0].result;
+
+            var text = "";
+            for (var p in networkState) {
+                text += p +": " + networkState[p] + " ";
+            }
+            $(".network-state").html(text);
+
+            resizeChart(false);
+            $(window).on('resize', function(){ resizeChart(false); });
+        });
+    }
+
+    $(document).ready(function() {
+        initChart();
+    });
+})();
+
+//cpu history info chart
+(function () {
+    var t,
+        chartObj,
+        canvasElem = $('.cpu-history-info'),
+        chartData = {
+            labels: ["8min", "6min", "4min", "2min", "0"],
+            datasets: [
+                {
+                    label: 'cpu',
+                    fillColor: 'rgba(0,0,0,0)',
+                    strokeColor: '#1FB5AD',
+                    pointColor: '#1FB5AD',
+                    pointStrokeColor: '#fff',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: '#1FB5AD',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+            ]
+        },
+        chartOptions = {
+            pointDotRadius : 4,
+            pointDotStrokeWidth : 2,
+            pointHitDetectionRadius : 8,
+            scaleLineWidth:1
+        };
+
+    function resizeChart(animate){
+        if (animate == undefined){
+            animate = false;
+        }
+        clearTimeout(t);
+        t = setTimeout(function(){
+            canvasElem.attr({
+                "width":canvasElem.parent().width(),
+                "height":canvasElem.parent().height()
+            });
+            redrawChart(animate);
+        }, 30);
+    }
+
+    function redrawChart(animation) {
+        if (!animation) {
+            chartOptions.animation = false;
+        } else {
+            chartOptions.animation = true;
+        }
+        var ctx = canvasElem.get(0).getContext("2d");
+        chartObj = new Chart(ctx).Line(chartData, chartOptions);
+    }
+
+    function initChart() {
+        $.get("http://121.40.90.167:8080/?serverId=" + serverId + "&action=getCpuRate", function(data) {
+            var result = JSON.parse(data);
+            var cpuInfo = result[0].result;
+            for (var i = 0, len = cpuInfo.length; i < len; i++) {
+                chartData.datasets[0].data[i] = parseInt(cpuInfo[i][0]["CpuTotal"]);
+            }
+
+            resizeChart(false);
+            $(window).on('resize', function(){ resizeChart(false); });
+        });
+    }
+
+    $(document).ready(function() {
+        initChart();
+    });
+})();
+
+//cpu mem info chart
+(function () {
+    var t,
+        chartObj,
+        canvasElem = $('.mem-history-info'),
+        chartData = {
+            labels: ["8min", "6min", "4min", "2min", "0"],
+            datasets: [
+                {
+                    label: 'mem',
+                    fillColor: 'rgba(0,0,0,0)',
+                    strokeColor: '#FF5A5E',
+                    pointColor: '#FF5A5E',
+                    pointStrokeColor: '#fff',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: '#FF5A5E',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                    label: 'swap',
+                    fillColor: 'rgba(0,0,0,0)',
+                    strokeColor: '#1FB5AD',
+                    pointColor: '#1FB5AD',
+                    pointStrokeColor: '#fff',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: '#1FB5AD',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+            ]
+        },
+        chartOptions = {
+            pointDotRadius : 4,
+            pointDotStrokeWidth : 2,
+            pointHitDetectionRadius : 8,
+            scaleLineWidth:1
+        };
+
+    function resizeChart(animate){
+        if (animate == undefined){
+            animate = false;
+        }
+        clearTimeout(t);
+        t = setTimeout(function(){
+            canvasElem.attr({
+                "width":canvasElem.parent().width(),
+                "height":canvasElem.parent().height()
+            });
+            redrawChart(animate);
+        }, 30);
+    }
+
+    function redrawChart(animation) {
+        if (!animation) {
+            chartOptions.animation = false;
+        } else {
+            chartOptions.animation = true;
+        }
+        var ctx = canvasElem.get(0).getContext("2d");
+        chartObj = new Chart(ctx).Line(chartData, chartOptions);
+    }
+
+    function initChart() {
+        $.get("http://121.40.90.167:8080/?serverId=" + serverId + "&action=getMemInfo", function(data) {
+            var result = JSON.parse(data);
+            var memInfo = result[0].result;
+            for (var i = 0, len = memInfo.length; i < len; i++) {
+                memValue = ((parseInt(memInfo[i][0]["MemTotal"]) - parseInt(memInfo[i][1]["MemFree"])) * 100 / parseInt(memInfo[i][0]["MemTotal"]));
+                swapValue = ((parseInt(memInfo[i][2]["SwapTotal"]) - parseInt(memInfo[i][3]["SwapFree"])) * 100 / parseInt(memInfo[i][2]["SwapTotal"]));
+                if (isNaN(swapValue)) {
+                    swapValue = 0;
+                }
+                chartData.datasets[0].data[i] = memValue;
+                chartData.datasets[1].data[i] = swapValue;
+            }
+
+            resizeChart(false);
+            $(window).on('resize', function(){ resizeChart(false); });
+        });
+    }
+
+    $(document).ready(function() {
+        initChart();
+    });
 })();
 </script>
 

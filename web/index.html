@@ -8,7 +8,7 @@
     <meta name="author" content="ThemeBucket">
     <link rel="shortcut icon" href="images/favicon.png">
 
-    <title>首页</title>
+    <title>机器列表</title>
 
     <!--Core CSS -->
     <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
@@ -38,7 +38,7 @@
 <!--logo start-->
 <div class="brand">
 
-    <a href="#" class="logo">
+    <a href="index.html" class="logo">
         <i class="fa fa-dashboard"></i>
     </a>
     <div class="sidebar-toggle-box">
@@ -56,12 +56,6 @@
             <ul class="sidebar-menu" id="nav-accordion">
                 <li>
                     <a href="index.html" class="active">
-                        <i class="fa fa-home"></i>
-                        <span>系统首页</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="list.html">
                         <i class="fa fa-th-list"></i>
                         <span>机器列表</span>
                     </a>
@@ -73,8 +67,8 @@
                     </a>
                 </li>
 
-        </ul></div>        
-<!-- sidebar menu end-->
+            </ul></div>
+        <!-- sidebar menu end-->
     </div>
 </aside>
 <!--sidebar end-->
@@ -83,19 +77,28 @@
         <section class="wrapper">
         <!-- page start-->
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-4">
                 <ul class="breadcrumbs-alt"  id="menu-toggle-view" >
                     <li>
-                        <a href="index.html" class="active-trail active current">首页</a>
+                        <a href="index.html">首页</a>
+                    </li>
+                    <li>
+                        <a class="active-trail active current" href="#">机器列表</a>
                     </li>
                 </ul>
+            </div>
+            <div class="col-md-3">
+                <input name="refresh-rate" class="form-control" placeholder="后台数据刷新频率/秒">
+            </div>
+            <div class="col-md1">
+                <button class="btn btn-primary" type="submit">提交</button>
             </div>
         </div>
         <section class="panel list-panel">
             <header class="panel-heading">
                 机器列表
             </header>
-            <div class="panel-body ">
+            <div class="panel-body">
                 <table class="table table-responsive list-table">
                     <thead>
                     <th>机器编号</th>
@@ -125,10 +128,10 @@
 <!-- Placed js at the end of the document so the pages load faster -->
 
 <!--Core js-->
-<script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript" src="bs3/js/bootstrap.min.js"></script>
-<script type="text/javascript" class="include" src="js/jquery.dcjqaccordion.2.7.js"></script>
-<script type="text/javascript" src="js/jquery.nicescroll.js"></script>
+<script src="js/jquery.js"></script>
+<script src="bs3/js/bootstrap.min.js"></script>
+<script class="include" type="text/javascript" src="js/jquery.dcjqaccordion.2.7.js"></script>
+<script src="js/jquery.nicescroll.js"></script>
 
 <!--common script init for all pages-->
 <script src="js/scripts.js"></script>
@@ -143,15 +146,15 @@
             });
             
             $.get('http://121.40.90.167:8080/?action=getBaseInfo&serverId=0', function(data) {
-            	var serverArray = JSON.parse(data);
-            	for (var i = 0, len = serverArray.length; i < len; i++) {
-	            	var serverItem = $('.list-table tbody tr').first().clone(true);
-	            	serverItem.find('.server-id').html(i);
-	            	serverItem.find('.server-name').html(serverArray[i].serverName);
-	            	serverItem.find('.server-os').html(serverArray[i].serverOS);
-	            	serverItem.find('.server-kernel').html(serverArray[i].serverKernel);
-	            	$('.list-table tbody').append(serverItem);
-            	}
+                var serverInfo = JSON.parse(data);
+                for (var i = 0, len = serverInfo.length; i < len; i++) {
+                    var serverItem = $('.list-table tbody tr').first().clone(true);
+                    serverItem.find('.server-id').html(i);
+                    serverItem.find('.server-name').html(serverInfo[i].serverName);
+                    serverItem.find('.server-os').html(serverInfo[i].serverOS);
+                    serverItem.find('.server-kernel').html(serverInfo[i].serverKernel);
+                    $('.list-table tbody').append(serverItem);
+                }
             });
         })();
         function set_size() {
@@ -163,6 +166,16 @@
 
         $(window).on('resize', function(){ set_size(); });
         set_size();
+
+        $('button[type="submit"]').click(function() {
+            var rate = $('input[name="refresh-rate"]').val();
+            if (typeof Number(rate) != "number") {
+                alert("请输入一个数字作为后台数据的刷新频率，单位/秒");
+            }
+            $.get("http://121.40.90.167:8080/?action=updateTime&serverId=0&parameter=" + rate, function(data) {
+                alert(data);
+            });
+        });
     });
 </script>
 </body>

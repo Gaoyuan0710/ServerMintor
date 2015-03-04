@@ -56,12 +56,6 @@
             <ul class="sidebar-menu" id="nav-accordion">
                 <li>
                     <a href="index.html">
-                        <i class="fa fa-home"></i>
-                        <span>系统首页</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="list.html">
                         <i class="fa fa-th-list"></i>
                         <span>机器列表</span>
                     </a>
@@ -83,7 +77,7 @@
         <section class="wrapper">
         <!-- page start-->
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-3">
                 <ul class="breadcrumbs-alt"  id="menu-toggle-view" >
                     <li>
                         <a href="index.html">首页</a>
@@ -92,6 +86,12 @@
                         <a class="active-trail active current" href="#">进程信息</a>
                     </li>
                 </ul>
+            </div>
+            <div class="col-md-2">
+            	<select id="sortParam" class="form-control">
+            		<option value="Cpu">按Cpu排序</option>
+            		<option value="Mem">按Mem排序</option>
+            	</select>
             </div>
         </div>
         <section class="panel list-panel">
@@ -144,25 +144,36 @@
 <script src="js/scripts.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
-        (function () {
+        function updatePidsSortBy (sortParam) {
         	var serverId = getCookie("serverId");
             
-            $.get('http://121.40.90.167:8080/?action=getPidsSortByCpu&serverId=' + serverId, function(data) {
+            $.get('http://121.40.90.167:8080/?action=getPidsSortBy' + sortParam + '&serverId=' + serverId, function(data) {
             	var result = JSON.parse(data);
             	var processArray = result[0]['result'];
             	console.log(processArray[0]);
+	            
+	            var itemPattern = $('.list-table tbody tr').first().clone(true);
+	            $('.list-table tbody').html("");
             	for (var i = 0, len = processArray.length; i < len; i++) {
-	            	var serverItem = $('.list-table tbody tr').first().clone(true);
-	            	serverItem.find('.user').html(processArray[i].user);
-	            	serverItem.find('.pid').html(processArray[i].Pid);
-	            	serverItem.find('.cpu').html(processArray[i]["%Cpu"] + "%");
-	            	serverItem.find('.mem').html(processArray[i]["%Mem"] + "%");
-	            	serverItem.find('.stat').html(processArray[i].Stat);
-	            	serverItem.find('.cmd').html(processArray[i].Command);
-	            	$('.list-table tbody').append(serverItem);
+	            	var tableItem = itemPattern.clone(true);
+	            	tableItem.find('.user').html(processArray[i].user);
+	            	tableItem.find('.pid').html(processArray[i].Pid);
+	            	tableItem.find('.cpu').html(processArray[i]["%Cpu"] + "%");
+	            	tableItem.find('.mem').html(processArray[i]["%Mem"] + "%");
+	            	tableItem.find('.stat').html(processArray[i].Stat);
+	            	tableItem.find('.cmd').html(processArray[i].Command);
+	            	$('.list-table tbody').append(tableItem);
             	}
             });
-        })();
+        };
+
+        updatePidsSortBy("Cpu");
+
+        $("#sortParam").change(function() {
+        	var param = $(this).val();
+        	updatePidsSortBy(param);
+        });
+
         function set_size() {
             var window_height = $(window).height();
             var panel_top = $('.list-panel').offset().top;
