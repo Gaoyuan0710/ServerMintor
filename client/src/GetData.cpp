@@ -504,7 +504,8 @@ string GetData::getProSortByMem(){
 	char buffer[1024];
 	string tempdata = "";
 
-	pp = popen("ps auxch | sort -k4 -r | awk 'NR<8{print $1,$2,$3,$4,$8,$11}'", "r");
+//	pp = popen("ps auxch | sort -k4 -r | awk 'NR<8{print $1,$2,$3,$4,$8,$11}'", "r");
+	pp = popen("ps -eo user,ppid,pcpu,pmem,stat,comm | sort -nr -k 4 |head -n 8", "r");
 
 	while(fgets(buffer, sizeof(buffer), pp) != NULL){
 		tempdata.append(buffer);
